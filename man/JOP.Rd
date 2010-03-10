@@ -1,0 +1,147 @@
+\name{JOP}
+\alias{JOP}
+\alias{oplot}
+\alias{JOPexample}
+\alias{JOPexampledata}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+JOP and oplot
+}
+\description{
+JOP calculates optimal design parameters associated with a given sequence of weight matrices
+based on the minimization of a risk function introduced by Pignatiello (1993). Furthermore JOP 
+visualizes the optimal design parameters and the appropriate predicted responses using the joint 
+optimization plot introduced by Kuhnt and Erdbruegge (2004). The function oplot takes the output 
+produced by JOP and conducts the visualization without optimization.
+}
+\usage{
+JOP(nx = 2, ny = 1, Wstart = 1, Wend = 1,
+ numbW = 1, d = c(1, 0),data = NULL, tau = NULL, 
+ mean.model = NULL, var.model = NULL, solver = 0)
+oplot(data, out)
+JOPexampledata()
+JOPexample(solver=0)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{nx}{
+  number of design parameters
+}
+  \item{ny}{
+  number of responses
+}
+  \item{Wstart}{
+  value to calculate the sequence of weight matrices (see Details)
+}
+  \item{Wend}{
+  value to calculate the sequence of weight matrices (see Details)
+  }
+  \item{numbW}{
+  value to calculate the sequence of weight matrices (see Details)
+}
+  \item{d}{
+  a vector with values to calculate the sequence of weight matrices (see Details)
+}
+  \item{data}{
+  the data set (data.frame)
+}
+  \item{tau}{
+  vector of target values for the corresponding responses
+}
+  \item{mean.model}{
+  list of functions that model the mean for the corresponding response (see Details)
+}
+  \item{var.model}{
+  list of functions that model the variance for the corresponding response (see Details)
+}
+  \item{solver}{
+  optional. A numeric vector. Choices are 0, 1, 2. If the user sets \code{solver=1},
+  then JOP uses 'gosolnp' for optimization. If the user sets \code{solver=2},
+  then JOP uses 'genoud' for optimization. Otherwise (\code{solver=0}) JOP uses nlminb for optimization. The default is \code{solver=0}.
+}
+  \item{out}{object from JOP 
+}
+
+}
+
+\value{
+JOP returns a list containing the following elements:
+\item{Parameters}{The i-th row of this matrix contains the optimal Parameter setting appropriate to the i-th weight matrix} 
+\item{Responses}{The i-th row of this matrix contains the predicted Responses appropriate to the i-th weight matrix}  
+\item{StandardDeviation}{The i-th row of this matrix contains the standard deviation value for each response}
+\item{OptimalValue}{This vector contains the optimal value of the risk function for each optimal parameter setting}
+\item{TargetValue}{Contains the target values for the correspoding responses}
+}
+\details{Let \eqn{Y=(Y_1,\ldots,Y_p)}{Y=(Y_1,...,Y_p)} denote a vector of responses, \eqn{\tau=(\tau_1,\ldots,\tau_p)}{
+tau=(tau_1,...,tau_p)} a vector of target values and \eqn{x=(x_1,\ldots,x_k)}{x=x_1,...,x_k} a vector of design parameters. 
+ First JOP minimizes the risk function (introduced by Pignatiello (1993)) \deqn{\hat{R}(x)=\mbox{trace}(C\hat{\Sigma}(x))+
+ (\hat{\mu}(x)-\tau)^TC(\hat{\mu}(x)-\tau)\mbox{,}}{R(x)=trace(C*Sigma(x)+(mu(x)-tau)'C(mu(x)-tau))} 
+ where \eqn{\mbox{C}}{C} is the so called cost matrix given by \eqn{C=A^TWA}{A'WA}, where A is the so called standadization
+ matrix and W is the weight matrix.
+The matrix \eqn{\mbox{C}}{C} is unaffected by affine linear transformations. 
+\eqn{A} is given by \deqn{A=\mbox{diag}([\frac{1}{k}\sum_{i=1}^{k}\hat{\mbox{Var}}(Y_r|x_i)]^{-\frac{1}{2}}_
+{r=1,\ldots,p})\mbox{.}}{A=diag((1/k)*sum_{i=1}^{k} Var(Y_r|x_i)^(-1/2) (for r=1,...,p)).}
+The weight matrices are calculated with the help of 
+\eqn{\mbox{d}}{d}, \eqn{\mbox{Wstart}}{Wstart}, \eqn{\mbox{Wend}}{Wend}, \eqn{\mbox{numbW}}{numbW}. The number of weight 
+matrices is equal to numbW and the weight matrices are calculated as illustrated in the following. 
+Let \deqn{a=\{a_1,\ldots,a_{\mbox{numbW}}\}=\{\mbox{Wstart}, ... , \mbox{Wend}\}}{a=(a_1, ... ,a_{numbW}={Wstart, ... ,Wend}} be
+a finite equidistant sequence. 
+Furthermore let \eqn{\mbox{diagW}_i=(w_1,\ldots,w_p)}{diagWi=(w_1,...,w_p)}
+ denote the diagonal of the i-th weight matrix \eqn{\mbox{W}_i}{Wi}. 
+Then \eqn{\mbox{diagW}_i}{diagWi} is calculated in the following way: 
+\deqn{\log(\mbox{diagW}_i)=d*a_i,\quad i=1\mbox{,} \ldots \mbox{,} \mbox{numbW}}{log(diagW_i)=d*a_i ,  i=1 , ... , numbW}    
+
+The functions in the lists \code{mean.model} and \code{var.model} must depend on the parameter vector x and should only return the function value. 
+
+After the data is prepared, the optimization routine starts and calculates the optimal design parameters and the appropriate predicted responses
+for every weight matrix and every response variable. The optimization region is a sphere around the origin. The radius of the sphere 
+is the the absolute largest value of the design matrix. The user may choose between the optimization routines \code{nlminb} (by default)
+, \code{gosolnp} (by setting \code{solver=1}, requires the package \code{Rsolnp}) and genoud (by setting \code{solver=2}, requires the package \code{rgenoud}). The routine \code{nlminb} is a local optimizer. \code{nlminb} calculates an
+optimal parameter setting for three different start parameters and chooses the one with lowest objective value. Furthermore \code{nlminb} is less time-consuming then 
+\code{gosolnp}. The routine \code{gosolnp} enables the generation of a set of randomly chosen parameters from which to initialize multiple
+restarts of the solver \code{solnp}. \code{solnp} belongs to the class of indirect solvers and implements the augmented Lagrange multiplier
+method with an SQP interior algorithm. The most time consuming solver compared to the last mentioned is \code{genoud}. This routine combines evolutionary 
+search algorithms with derivative-based (Newton or quasi-Newton) methods. If the objective function is nonsmooth or has many local minima,
+the user should choose the \code{goslnp} (\code{solver=1}). Furthermore it is recommendable to choose \code{genoud} (\code{solver=2}), if the objective function
+is very complex and the optimization problem is rather difficult. 
+
+Afterwards the joint optimization plot is displayed. The left-hand plot shows the optimal design parameters for every weight matrix 
+and every response variable. The legend in the left upper corner displays the names of the appropriate parameters. 
+The right-hand plot shows the appropriate predicted responses. The curves correspond to the values on the vertical axis 
+in the same color. The legend in the upper right corner contains the names of the appropriate responses and the target
+values. On the right-hand plot the user is able to find a  "good" compromise and afterwards the user looks for the corresponding optimal 
+design parameters on the left-hand plot.
+
+The function \code{oplot} displays the joint optimization plot with the help of the object \code{out} from \code{JOP}. 
+
+Furthermore \code{JOPexampledata} returns a list that contains the data for a sheet metal hydroforming process as an illustrating example. There 
+There are two parameters and two response. The list consists of a data frame and two lists of functions that model the mean
+and the variance of the corresponding response.  
+
+The function \code{JOPexample} calculates the joint optimization plot for the example mentioned above
+and returns the same object as \code{JOP}. 
+}
+\references{
+Sonja Kuhnt and Martina Erdbruegge (2004), "A strategy of robust paramater design for multiple responses", 
+Statistical Modelling; 4: 249-264, TU Dortmund.
+
+Joseph J. Pignatiello (1993), "Strategies for robust multiresponse quality engineering", IIE Transactions 25, 5-15, Texas A&M University.
+
+Walter R. Mebane,Jr., and Jasjeet Singh Sekhon (2007), "Genetic Optimization Using Derivatives: The rgenoud package for R." Journal of Statistical Software, Forthcoming. \url{http://www.jstatsoft.org/}.  
+
+Alexios Ghalanos and Stefan Theussl (2010). Rsolnp: General Non-linear Optimization Using Augmented Lagrange Multiplier Method. R package version 1.0-2. 
+}
+\author{
+Sonja Kuhnt and Nikolaus Rudak
+}
+
+
+\examples{
+# Example: Sheet metal hydroforming process
+data<-JOPexampledata()
+# JOPexample produces the same object out as JOP
+out<-JOPexample()
+# Visualization with oplot
+oplot(data$Dataset,out)
+}
+
