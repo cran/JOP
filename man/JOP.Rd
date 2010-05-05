@@ -3,16 +3,19 @@
 \alias{oplot}
 \alias{JOPexample}
 \alias{JOPexampledata}
+\alias{locate}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-JOP and oplot
+JOP, oplot and locate
 }
 \description{
-JOP calculates optimal design parameters associated with a given sequence of weight matrices
-based on the minimization of a risk function introduced by Pignatiello (1993). Furthermore JOP 
+\code{JOP} calculates optimal design parameters associated with a given sequence of weight matrices
+based on the minimization of a risk function introduced by Pignatiello (1993). Furthermore \code{JOP} 
 visualizes the optimal design parameters and the appropriate predicted responses using the joint 
-optimization plot introduced by Kuhnt and Erdbruegge (2004). The function oplot takes the output 
-produced by JOP and conducts the visualization without optimization.
+optimization plot introduced by Kuhnt and Erdbruegge (2004). The function \code{oplot} takes the output 
+produced by \code{JOP} and conducts the visualization without optimization. Furthermore the function
+\code{locate} allows the user to choose a point as a "good" compromise on the right plot and \code{locate} returns 
+the corresponding design parameters. 
 }
 \usage{
 JOP(nx = 2, ny = 1, Wstart = 1, Wend = 1,
@@ -21,6 +24,7 @@ JOP(nx = 2, ny = 1, Wstart = 1, Wend = 1,
 oplot(data, out)
 JOPexampledata()
 JOPexample(solver=0)
+locate(data,out,xlu=NaN)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -61,7 +65,9 @@ JOPexample(solver=0)
 }
   \item{out}{object from JOP 
 }
-
+  \item{xlu}{The x-coordinate that indicates where the user assumes a "good" compromise,
+  see Details  
+  }
 }
 
 \value{
@@ -120,6 +126,15 @@ and the variance of the corresponding response.
 
 The function \code{JOPexample} calculates the joint optimization plot for the example mentioned above
 and returns the same object as \code{JOP}. 
+
+The function \code{locate} allows the user to choose a preferred point on the right hand plot with a click with the mouse. 
+Another possibility is to select the value \code{xlu} that has be chosen in the interval \eqn{\code{[1,\ldots,\mbox{numbW}]}}{\code{[1,...,numbW]}}. 
+The value \code{xlu} indicates where
+the user assumes a "good" compromise on the right hand plot. Afterwards a vertical line through the 
+chosen x-coordinate is displayed on the left hand and the right hand plot. The intersection points
+are the chosen responses on the right hand plot and the corresponding design parameters on the left 
+hand plot. In addition the function \code{locate} returns a list that contains the chosen responses and its proper
+design parameters.
 }
 \references{
 Sonja Kuhnt and Martina Erdbruegge (2004), "A strategy of robust paramater design for multiple responses", 
@@ -139,9 +154,19 @@ Sonja Kuhnt and Nikolaus Rudak
 \examples{
 # Example: Sheet metal hydroforming process
 data<-JOPexampledata()
+# the first argument contains the data set
+dataset<-data[[1]]
 # JOPexample produces the same object out as JOP
+# It calculates a solution for the data set mentioned above
 out<-JOPexample()
 # Visualization with oplot
-oplot(data$Dataset,out)
+oplot(dataset,out)
+# The user may locate a point on the right plot
+# and afterwards a vertical line is displayed 
+# on the left and right plot.
+#
+# Choose the coordinate: 
+xlu<-2
+opt<-locate(dataset,out,xlu)
 }
 

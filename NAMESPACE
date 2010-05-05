@@ -1,1 +1,1 @@
-export(JOP,oplot,JOPexample,JOPexampledata)
+export(JOP,oplot,JOPexample,JOPexampledata,locate)
