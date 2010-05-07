@@ -230,15 +230,20 @@ function(data,out,xlu=NaN)
     nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=")
   }
   legend(numbW*(0.55),1.25+max(devstand),nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
-  xl<-xloc1
+  xl<-xloc1[1]
   for(i in 1:(numbW-1))
   {
-    if((i<=xl) && (xl<=(i+1)))
+    if((i<=xl) && (xl<(i+1)))
     {
-      optp<-(optmatrix[i+1,]-optmatrix[i,])*xl+(i+1)*optmatrix[i+1,]-i*optmatrix[i,]
-      reoptp<-(reoptmatrix[i+1,]-reoptmatrix[i,])*xl+(i+1)*reoptmatrix[i+1,]-i*reoptmatrix[i,]      
-    }  
+      optp<-(optmatrix[i+1,]-optmatrix[i,])*(xl-floor(xl))+optmatrix[i,]
+      reoptp<-(reoptmatrix[i+1,]-reoptmatrix[i,])*(xl-floor(xl))+reoptmatrix[i,]    
+    }
   }
+  if(xl==numbW)
+  {
+    optp<-out$Parameters[numbW,]
+    reoptp<-out$Responses[numbW,]
+  }  
   opt<-list(optp,reoptp)
 
   names(opt)<-list("ChosenParameters","ChosenResponses")
