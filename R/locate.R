@@ -101,7 +101,7 @@ function(data,out,xlu=NaN)
     {
       point2[1]<-reoptplot[i,j]+devstand[i,j]
       point2[2]<-reoptplot[i,j]-devstand[i,j]
-      points(point1,point2,col=cols[nx+j],pch=4)
+      points(point1,point2,col=cols[nx+j])#,pch=4)
       lines(point1,point2,col=cols[nx+j])
     }
   }
@@ -117,6 +117,9 @@ function(data,out,xlu=NaN)
   ####
   ####  Location of points
   ####
+
+
+
  
   if(is.nan(xlu))
   {
@@ -127,6 +130,22 @@ function(data,out,xlu=NaN)
   {
     xloc1<-c(xlu,xlu)  
   }
+    
+  ## Chosen Points:
+  xl<-xloc1[1]
+  for(i in 1:(numbW-1))
+  {
+    if((i<=xl) && (xl<(i+1)))
+    {
+      optp<-(optmatrix[i+1,]-optmatrix[i,])*(xl-floor(xl))+optmatrix[i,]
+      reoptp<-(reoptmatrix[i+1,]-reoptmatrix[i,])*(xl-floor(xl))+reoptmatrix[i,]    
+    }
+  }
+  if(xl==numbW)
+  {
+    optp<-out$Parameters[numbW,]
+    reoptp<-out$Responses[numbW,]
+  }  
     ##  out is output of 'jointplot'
 
   ## Warning Messages:
@@ -177,7 +196,12 @@ function(data,out,xlu=NaN)
   yloc1<-c(min(xdesign),max(xdesign))
   points(xloc1,yloc1,pch=NaN)
   lines(xloc1,yloc1,lwd=2,lty="solid")
-
+  xlp<-rep(xloc1,nx)
+  xlr<-rep(xloc1,ny)
+  for(i in 1:nx)
+  {
+    points(xlp[i],optp[i],col=cols[i],cex=3)
+  }
   legend(0.5,max(xdesign)+(max(xdesign)-min(xdesign))/4,names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
 
 
@@ -188,6 +212,7 @@ function(data,out,xlu=NaN)
     reoptplot[,i]<-reoptmatrix[,i]/max(reoptmatrix[,i])
     devstand[,i]<-deviation[,i]/max(reoptmatrix[,i])
   }
+
 
   # right Plot
 
@@ -216,7 +241,7 @@ function(data,out,xlu=NaN)
     {
       point2[1]<-reoptplot[i,j]+devstand[i,j]
       point2[2]<-reoptplot[i,j]-devstand[i,j]
-      points(point1,point2,col=cols[nx+j],pch=4)
+      points(point1,point2,col=cols[nx+j])#,pch=4)
       lines(point1,point2,col=cols[nx+j])
     }
   }
@@ -229,21 +254,12 @@ function(data,out,xlu=NaN)
   {
     nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=")
   }
-  legend(numbW*(0.55),1.25+max(devstand),nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
-  xl<-xloc1[1]
-  for(i in 1:(numbW-1))
+  for(i in 1:ny)
   {
-    if((i<=xl) && (xl<(i+1)))
-    {
-      optp<-(optmatrix[i+1,]-optmatrix[i,])*(xl-floor(xl))+optmatrix[i,]
-      reoptp<-(reoptmatrix[i+1,]-reoptmatrix[i,])*(xl-floor(xl))+reoptmatrix[i,]    
-    }
+    points(xlp[i],reoptp[i]/max(reoptmatrix[,i]),col=cols[nx+i],cex=3)
   }
-  if(xl==numbW)
-  {
-    optp<-out$Parameters[numbW,]
-    reoptp<-out$Responses[numbW,]
-  }  
+  legend(numbW*(0.55),1.25+max(devstand),nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
+
   opt<-list(optp,reoptp)
 
   names(opt)<-list("ChosenParameters","ChosenResponses")
