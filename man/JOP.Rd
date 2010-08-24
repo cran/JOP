@@ -19,11 +19,11 @@ the corresponding design parameters.
 }
 \usage{
 JOP(nx = 2, ny = 1, Wstart = 1, Wend = 1,
- numbW = 1, d = c(1, 0),data = NULL, tau = NULL, 
+ numbW = 1, d = c(1, 0),optreg=0,data = NULL, tau = NULL, 
  mean.model = NULL, var.model = NULL, solver = 0)
 oplot(data, out)
 JOPexampledata()
-JOPexample(solver=0)
+JOPexample(solver=0,optreg=0)
 locate(data,out,xlu=NaN)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -45,6 +45,9 @@ locate(data,out,xlu=NaN)
 }
   \item{d}{
   a vector with values to calculate the sequence of weight matrices (see Details)
+}
+  \item{optreg}{
+  User can choose the Optimization region. \code{optreg=1}: cube, \code{optreg=0}: sphere (see Details)
 }
   \item{data}{
   the data set (data.frame)
@@ -100,7 +103,8 @@ Then \eqn{\mbox{diagW}_i}{diagWi} is calculated in the following way:
 The functions in the lists \code{mean.model} and \code{var.model} must depend on the parameter vector x and should only return the function value. 
 
 After the data is prepared, the optimization routine starts and calculates the optimal design parameters and the appropriate predicted responses
-for every weight matrix and every response variable. The optimization region is a sphere around the origin. The radius of the sphere 
+for every weight matrix and every response variable. The optimization region is a sphere around the origin if the user chooses \code{optreg=0}
+and a cube if the user chooses \code{optreg=1}. The radius of the sphere 
 is the the absolute largest value of the design matrix. The user may choose between the optimization routines \code{nlminb} (by default)
 , \code{gosolnp} (by setting \code{solver=1}, requires the package \code{Rsolnp}) and genoud (by setting \code{solver=2}, requires the package \code{rgenoud}). The routine \code{nlminb} is a local optimizer. \code{nlminb} calculates an
 optimal parameter setting for three different start parameters and chooses the one with lowest objective value. Furthermore \code{nlminb} is less time-consuming then 

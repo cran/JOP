@@ -52,11 +52,12 @@
        ###############################################
        ###############################################
     
-  JOP<-function(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),data=NULL,tau=NULL,mean.model=NULL,var.model=NULL,solver=0)
+  JOP<-function(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),optreg=0,data=NULL,tau=NULL,mean.model=NULL,var.model=NULL,solver=0)
   {
         ## solver=0: nlminb
         ## solver=1: rgenoud
-        
+        ## optreg=0: Optimization region is a sphere
+        ## optreg=1: Optimization region is a cube
         
         ## mean.model, var.model : List of functions of type mean.model<-function(x)
         ##                           that return a single response value
@@ -156,79 +157,159 @@
     reoptmatrix<-matrix(NaN,ncol=ny,nrow=numbW)
      
     ## Restrictions
-    lower<-c(0,rep(-pi,nx-1))
-    upper<-c(max(abs(xdesign)),rep(pi,nx-1))
-    Domain<-cbind(lower,upper)
-    cat("...Optimization starts...\n")
-    cat("\n")
-    deviation<-matrix(NaN,ncol=ny,nrow=numbW)
-    optval<-NULL
-
-    for(i in 1:numbW)
+    if(optreg==0)
     {
-      riscfun<-function(x)
-      {
-        varval<-NULL
-        meanval<-NULL
-        for(j in 1:ny)
-        {
-           varval[j]<-as.numeric(var.model[[j]](trafopar(x)))
-           meanval[j]<-as.numeric(mean.model[[j]](trafopar(x)))    
-        }
-        return(sum(diag(W[[i]]%*%diag(varval)))+sum(t(meanval-tau)%*%W[[i]]%*%(meanval-tau)))  
-      }
-      #Optimization is conducted on a sphere
+      lower<-c(0,rep(-pi,nx-1))
+      upper<-c(max(abs(xdesign)),rep(pi,nx-1))
+      Domain<-cbind(lower,upper)
+      cat("...Optimization starts...\n")
+      cat("\n")
+      deviation<-matrix(NaN,ncol=ny,nrow=numbW)
+      optval<-NULL
   
-      # User can choose a solver
-      if(solver==0)
-      { 
-        opt1<-nlminb(c(max(xdesign)/2,rep(-pi/2,nx-1)),riscfun,lower=lower,upper=upper)
-        opt<-opt1
-        opt2<-nlminb(c(max(xdesign)/2,rep(0,nx-1)),riscfun,lower=lower,upper=upper)
-        if(opt$objective>opt1$objective)
-        {
-          opt<-opt2
-        }
-        opt3<-nlminb(c(max(xdesign)/2,rep(pi/2,nx-1)),riscfun,lower=lower,upper=upper)    
-        if(opt$objective>opt3$objective)
-        {
-          opt<-opt3
-        }
-        optval[i]<-opt$objective
-        # The results are stored in optmatrix, reoptmatrix and deviation
-        optmatrix[i,]<-trafopar(opt$par)
-        for(k in 1:ny)
-        {
-          reoptmatrix[i,k]<-as.numeric(mean.model[[k]](trafopar(opt$par)))
-          deviation[i,k]<-as.numeric(var.model[[k]](trafopar(opt$par)))
-        }
-      }
-      if(solver==1)
-      { 
-        opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2)
-        optval[i]<-opt$values[length(opt$values)]
-        # The results are stored in optmatrix, reoptmatrix and deviation
-        optmatrix[i,]<-trafopar(opt$pars)
-        for(k in 1:ny)
-        {
-          reoptmatrix[i,k]<-as.numeric(mean.model[[k]](trafopar(opt$pars)))
-          deviation[i,k]<-as.numeric(var.model[[k]](trafopar(opt$pars)))
-        }
-      }
-      if(solver==2)
+      for(i in 1:numbW)
       {
-        opt<-genoud(riscfun,nvars=nx,Domains=Domain, print.level=0,
-                 boundary.enforcement=2,wait.generations=50)
-        optval[i]<-opt$value
-        # The results are stored in optmatrix, reoptmatrix and deviation
-        optmatrix[i,]<-trafopar(opt$par)
-        for(k in 1:ny)
+        riscfun<-function(x)
         {
-          reoptmatrix[i,k]<-as.numeric(mean.model[[k]](trafopar(opt$par)))
-          deviation[i,k]<-as.numeric(var.model[[k]](trafopar(opt$par)))
+          varval<-NULL
+          meanval<-NULL
+          for(j in 1:ny)
+          {
+             varval[j]<-as.numeric(var.model[[j]](trafopar(x)))
+             meanval[j]<-as.numeric(mean.model[[j]](trafopar(x)))    
+          }
+          return(sum(diag(W[[i]]%*%diag(varval)))+sum(t(meanval-tau)%*%W[[i]]%*%(meanval-tau)))  
         }
+        #Optimization is conducted on a sphere
+    
+        # User can choose a solver
+        if(solver==0)
+        { 
+          opt1<-nlminb(c(max(xdesign)/2,rep(-pi/2,nx-1)),riscfun,lower=lower,upper=upper)
+          opt<-opt1
+          opt2<-nlminb(c(max(xdesign)/2,rep(0,nx-1)),riscfun,lower=lower,upper=upper)
+          if(opt$objective>opt1$objective)
+          {
+            opt<-opt2
+          }
+          opt3<-nlminb(c(max(xdesign)/2,rep(pi/2,nx-1)),riscfun,lower=lower,upper=upper)    
+          if(opt$objective>opt3$objective)
+          {
+            opt<-opt3
+          }
+          optval[i]<-opt$objective
+          # The results are stored in optmatrix, reoptmatrix and deviation
+          optmatrix[i,]<-trafopar(opt$par)
+          for(k in 1:ny)
+          {
+            reoptmatrix[i,k]<-as.numeric(mean.model[[k]](trafopar(opt$par)))
+            deviation[i,k]<-as.numeric(var.model[[k]](trafopar(opt$par)))
+          }
+        }
+        if(solver==1)
+        { 
+          opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2)
+          optval[i]<-opt$values[length(opt$values)]
+          # The results are stored in optmatrix, reoptmatrix and deviation
+          optmatrix[i,]<-trafopar(opt$pars)
+          for(k in 1:ny)
+          {
+            reoptmatrix[i,k]<-as.numeric(mean.model[[k]](trafopar(opt$pars)))
+            deviation[i,k]<-as.numeric(var.model[[k]](trafopar(opt$pars)))
+          }
+        }
+        if(solver==2)
+        {
+          opt<-genoud(riscfun,nvars=nx,Domains=Domain, print.level=0,
+                   boundary.enforcement=2,wait.generations=50)
+          optval[i]<-opt$value
+          # The results are stored in optmatrix, reoptmatrix and deviation
+          optmatrix[i,]<-trafopar(opt$par)
+          for(k in 1:ny)
+          {
+            reoptmatrix[i,k]<-as.numeric(mean.model[[k]](trafopar(opt$par)))
+            deviation[i,k]<-as.numeric(var.model[[k]](trafopar(opt$par)))
+          }
+        }
+                                                     
       }
-                                                   
+    }
+    if(optreg==1)
+    {
+      lower<-rep(-max(abs(xdesign)),nx)
+      upper<-rep(max(abs(xdesign)),nx)
+      Domain<-cbind(lower,upper)
+      cat("...Optimization starts...\n")
+      cat("\n")
+      deviation<-matrix(NaN,ncol=ny,nrow=numbW)
+      optval<-NULL
+  
+      for(i in 1:numbW)
+      {
+        riscfun<-function(x)
+        {
+          varval<-NULL
+          meanval<-NULL
+          for(j in 1:ny)
+          {
+             varval[j]<-as.numeric(var.model[[j]](x))
+             meanval[j]<-as.numeric(mean.model[[j]](x))    
+          }
+          return(sum(diag(W[[i]]%*%diag(varval)))+sum(t(meanval-tau)%*%W[[i]]%*%(meanval-tau)))  
+        }
+        #Optimization is conducted on a sphere
+    
+        # User can choose a solver
+        if(solver==0)
+        { 
+          opt1<-nlminb(rep(max(xdesign)/2,nx),riscfun,lower=lower,upper=upper)
+          opt<-opt1
+          opt2<-nlminb(rep(-max(xdesign)/2,nx),riscfun,lower=lower,upper=upper)
+          if(opt$objective>opt1$objective)
+          {
+            opt<-opt2
+          }
+          opt3<-nlminb(rep(0,nx),riscfun,lower=lower,upper=upper)    
+          if(opt$objective>opt3$objective)
+          {
+            opt<-opt3
+          }
+          optval[i]<-opt$objective
+          # The results are stored in optmatrix, reoptmatrix and deviation
+          optmatrix[i,]<-opt$par
+          for(k in 1:ny)
+          {
+            reoptmatrix[i,k]<-as.numeric(mean.model[[k]](opt$par))
+            deviation[i,k]<-as.numeric(var.model[[k]](opt$par))
+          }
+        }
+        if(solver==1)
+        { 
+          opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2)
+          optval[i]<-opt$values[length(opt$values)]
+          # The results are stored in optmatrix, reoptmatrix and deviation
+          optmatrix[i,]<-opt$pars
+          for(k in 1:ny)
+          {
+            reoptmatrix[i,k]<-as.numeric(mean.model[[k]](opt$pars))
+            deviation[i,k]<-as.numeric(var.model[[k]](opt$pars))
+          }
+        }
+        if(solver==2)
+        {
+          opt<-genoud(riscfun,nvars=nx,Domains=Domain, print.level=0,
+                   boundary.enforcement=2,wait.generations=50)
+          optval[i]<-opt$value
+          # The results are stored in optmatrix, reoptmatrix and deviation
+          optmatrix[i,]<-opt$par
+          for(k in 1:ny)
+          {
+            reoptmatrix[i,k]<-as.numeric(mean.model[[k]](opt$par))
+            deviation[i,k]<-as.numeric(var.model[[k]](opt$par))
+          }
+        }
+                                                     
+      }
     }
     deviation<-sqrt(deviation)
     cat("...Optimal Parameters and Responses received...\n")
