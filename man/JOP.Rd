@@ -104,8 +104,9 @@ The functions in the lists \code{mean.model} and \code{var.model} must depend on
 
 After the data is prepared, the optimization routine starts and calculates the optimal design parameters and the appropriate predicted responses
 for every weight matrix and every response variable. The optimization region is a sphere around the origin if the user chooses \code{optreg=0}
-and a cube if the user chooses \code{optreg=1}. The radius of the sphere 
-is the the absolute largest value of the design matrix. The user may choose between the optimization routines \code{nlminb} (by default)
+and a polyhedron if the user chooses \code{optreg=1}. The radius of the sphere 
+is the largest norm of the parameter vectors out of the design matrix. The polyhedron is bounded above by the largest and below by the smallest value
+from each column of the matrix containing the responses. The user may choose between the optimization routines \code{nlminb} (by default)
 , \code{gosolnp} (by setting \code{solver=1}, requires the package \code{Rsolnp}) and genoud (by setting \code{solver=2}, requires the package \code{rgenoud}). The routine \code{nlminb} is a local optimizer. \code{nlminb} calculates an
 optimal parameter setting for three different start parameters and chooses the one with lowest objective value. Furthermore \code{nlminb} is less time-consuming then 
 \code{gosolnp}. The routine \code{gosolnp} enables the generation of a set of randomly chosen parameters from which to initialize multiple
@@ -120,7 +121,7 @@ and every response variable. The legend in the left upper corner displays the na
 The right-hand plot shows the appropriate predicted responses. The curves correspond to the values on the vertical axis 
 in the same color. The legend in the upper right corner contains the names of the appropriate responses and the target
 values. On the right-hand plot the user is able to find a  "good" compromise and afterwards the user looks for the corresponding optimal 
-design parameters on the left-hand plot.
+design parameters on the left-hand plot. The dashed horizontal lines display the target values. 
 
 The function \code{oplot} displays the joint optimization plot with the help of the object \code{out} from \code{JOP}. 
 

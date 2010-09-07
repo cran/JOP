@@ -160,7 +160,12 @@
     if(optreg==0)
     {
       lower<-c(0,rep(-pi,nx-1))
-      upper<-c(max(abs(xdesign)),rep(pi,nx-1))
+      normvec<-NULL
+      for(i in 1:dim(data)[1])
+      {
+        normvec[i]<-sqrt(t(as.numeric(data[i,1:nx]))%*%as.numeric(data[i,1:nx]))
+      }
+      upper<-c(max(normvec),rep(pi,nx-1))
       Domain<-cbind(lower,upper)
       cat("...Optimization starts...\n")
       cat("\n")
@@ -236,8 +241,13 @@
     }
     if(optreg==1)
     {
-      lower<-rep(-max(abs(xdesign)),nx)
-      upper<-rep(max(abs(xdesign)),nx)
+      lower<-NULL
+      upper<-NULL
+      for(i in 1:nx)
+      {
+        lower[i]<-min(data[,i])
+        upper[i]<-max(data[,i])
+      }
       Domain<-cbind(lower,upper)
       cat("...Optimization starts...\n")
       cat("\n")
@@ -331,7 +341,7 @@
     {
       # to avoid 'yellow'
       cols<-cols[-7]
-    }
+    }     
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
     plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(min(xdesign),max(xdesign)+(max(xdesign)-min(xdesign))/4),ylab="",xaxt="n",yaxt="n",pch=4)
@@ -346,22 +356,35 @@
     }
     legend(0.5,max(xdesign)+(max(xdesign)-min(xdesign))/4,names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
   
-  
+    
+    
+    # right Plot
+    
+      
     reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
     devstand<-matrix(NaN,ncol=ny,nrow=numbW)
     for(i in 1:ny)
     {
-      reoptplot[,i]<-reoptmatrix[,i]/max(reoptmatrix[,i])
-      devstand[,i]<-deviation[,i]/max(reoptmatrix[,i])
+      if(max(reoptmatrix[,i])>tau[i])
+      {
+       reoptplot[,i]<-reoptmatrix[,i]/max(reoptmatrix[,i])
+       devstand[,i]<-deviation[,i]/max(reoptmatrix[,i])
+      }
+      else
+      {
+       reoptplot[,i]<-reoptmatrix[,i]/tau[i]
+       devstand[,i]<-deviation[,i]/tau[i] 
+      }
     }
   
-    # right Plot
+
   
     par(fig=c(0.5,0.95,0.15,0.85),new=TRUE,bty="l",pty="s",las=1)
     plot(xaxis1,reoptplot[,1],xlab="Weight Matrices",ylab="",ylim=c(0,1.25+max(devstand)),xaxt="n",yaxt="n",pch=4)
     mtext("Predicted Response",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=c(0.25,0.625,1),labels=c("","",""))
+
     lines(xaxis1,reoptplot[,1],col=cols[nx+1])
     for(i in 2:ny)
     {
@@ -386,6 +409,49 @@
         lines(point1,point2,col=cols[nx+j])
       }
     }
+
+    ######################
+    ### Target Values ####
+    ######################
+        
+    axis4<-NULL
+    for(i in 1:ny)
+    {
+      axis4[i]<-tau[i]/max(reoptmatrix[,i])
+    }
+    zaehler<-vector("list",length(tau))
+    for(i in 1:length(tau))
+    {
+    counter<-NULL
+      for(j in 1:length(tau))
+      {
+        if(abs(axis4[i]-axis4[j])<0.065 && i!=j)
+        {
+          counter[i]<-j
+        }
+      }
+      zaehler[[i]]<-sort(c(i,counter))
+    }
+    for(i in 1:length(tau))
+    {
+      point1<-NULL
+      point2<-NULL
+      for(j in 1:length(zaehler[[i]]))
+      {
+        if(i==zaehler[[i]][j])
+        {
+          point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
+          point2<-c(axis4[i],axis4[i])
+          lines(point1,point2,col=cols[nx+i])
+          mtext(signif(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols[nx+i],cex=0.6,line=1.2)
+        }
+      }
+    }  
+
+    ##################################
+    ####### End: Target Values #######
+    ##################################
+    
     nam<-names(data)[(nx+1):(nx+ny)]
     for(i in 1:length(nam))
     {

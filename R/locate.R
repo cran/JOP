@@ -105,6 +105,48 @@ function(data,out,xlu=NaN)
       lines(point1,point2,col=cols[nx+j])
     }
   }
+    ######################
+    ### Target Values ####
+    ######################
+        
+    axis4<-NULL
+    for(i in 1:ny)
+    {
+      axis4[i]<-tau[i]/max(reoptmatrix[,i])
+    }
+    zaehler<-vector("list",length(tau))
+    for(i in 1:length(tau))
+    {
+    counter<-NULL
+      for(j in 1:length(tau))
+      {
+        if(abs(axis4[i]-axis4[j])<0.065 && i!=j)
+        {
+          counter[i]<-j
+        }
+      }
+      zaehler[[i]]<-sort(c(i,counter))
+    }
+    for(i in 1:length(tau))
+    {
+      point1<-NULL
+      point2<-NULL
+      for(j in 1:length(zaehler[[i]]))
+      {
+        if(i==zaehler[[i]][j])
+        {
+          point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
+          point2<-c(axis4[i],axis4[i])
+          lines(point1,point2,col=cols[nx+i])
+          mtext(signif(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols[nx+i],cex=0.6,line=1.2)
+        }
+      }
+    }  
+
+    ##################################
+    ####### End: Target Values #######
+    ##################################
+    
   nam<-names(data)[(nx+1):(nx+ny)]
   for(i in 1:length(nam))
   {
@@ -245,7 +287,48 @@ function(data,out,xlu=NaN)
       lines(point1,point2,col=cols[nx+j])
     }
   }
-  
+    ######################
+    ### Target Values ####
+    ######################
+        
+    axis4<-NULL
+    for(i in 1:ny)
+    {
+      axis4[i]<-tau[i]/max(reoptmatrix[,i])
+    }
+    zaehler<-vector("list",length(tau))
+    for(i in 1:length(tau))
+    {
+    counter<-NULL
+      for(j in 1:length(tau))
+      {
+        if(abs(axis4[i]-axis4[j])<0.065 && i!=j)
+        {
+          counter[i]<-j
+        }
+      }
+      zaehler[[i]]<-sort(c(i,counter))
+    }
+    for(i in 1:length(tau))
+    {
+      point1<-NULL
+      point2<-NULL
+      for(j in 1:length(zaehler[[i]]))
+      {
+        if(i==zaehler[[i]][j])
+        {
+          point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
+          point2<-c(axis4[i],axis4[i])
+          lines(point1,point2,col=cols[nx+i])
+          mtext(signif(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols[nx+i],cex=0.6,line=1.2)
+        }
+      }
+    }  
+
+    ##################################
+    ####### End: Target Values #######
+    ##################################
+    
   yloc1<-c(0,1.1)
   points(xloc1,yloc1,pch=NaN)
   lines(xloc1,yloc1,lwd=2,lty="solid")
