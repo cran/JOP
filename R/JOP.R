@@ -213,7 +213,7 @@
         }
         if(solver==1)
         { 
-          opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2)
+          opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2,control=list(trace=0))
           optval[i]<-opt$values[length(opt$values)]
           # The results are stored in optmatrix, reoptmatrix and deviation
           optmatrix[i,]<-trafopar(opt$pars)
@@ -295,7 +295,7 @@
         }
         if(solver==1)
         { 
-          opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2)
+          opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2,control=list(trace=0))
           optval[i]<-opt$values[length(opt$values)]
           # The results are stored in optmatrix, reoptmatrix and deviation
           optmatrix[i,]<-opt$pars
