@@ -49,11 +49,11 @@ function(data,out,xlu=NaN)
   xaxis2<-1:(numbW+ny-1)
   xaxis1names<-paste("W",xaxis1,sep="")
   parameternames<-paste("X",1:nx,sep="")
-  yaxis1<-seq(signif(min(xdesign),digits=3),signif(max(xdesign),digits=3),signif((max(xdesign)-min(xdesign))/2,digits=3))
+  yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
 
   # left plot
   par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-  plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(min(xdesign),max(xdesign)+(max(xdesign)-min(xdesign))/4),ylab="",xaxt="n",yaxt="n",pch=4)
+  plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=4)
   mtext("Parameter Setting",side=3,at=1,cex=0.6)
   axis(1,at=xaxis1,labels=xaxis1names)
   axis(2,at=yaxis1)
@@ -63,7 +63,7 @@ function(data,out,xlu=NaN)
     points(xaxis1,optmatrix[,i],col=cols[i],pch=4)
     lines(xaxis1,optmatrix[,i],col=cols[i])
   }
-  legend(0.5,max(xdesign)+(max(xdesign)-min(xdesign))/4,names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
+  legend(0.5,max(abs(optmatrix))+0.25*max(abs(optmatrix)),names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
 
 
   reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
@@ -219,11 +219,11 @@ function(data,out,xlu=NaN)
   xaxis2<-1:(numbW+ny-1)
   xaxis1names<-paste("W",xaxis1,sep="")
   parameternames<-paste("X",1:nx,sep="")
-  yaxis1<-seq(signif(min(xdesign),digits=3),signif(max(xdesign),digits=3),signif((max(xdesign)-min(xdesign))/2,digits=3))
+  yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
 
   # left plot
   par(fig=c(0,0.45,0.15,0.85),new=TRUE,lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-  plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(min(xdesign),max(xdesign)+(max(xdesign)-min(xdesign))/4),ylab="",xaxt="n",yaxt="n",pch=4)
+  plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=4)
   mtext("Parameter Setting",side=3,at=1,cex=0.6)
   axis(1,at=xaxis1,labels=xaxis1names)
   axis(2,at=yaxis1)
@@ -235,7 +235,7 @@ function(data,out,xlu=NaN)
   }
 
 
-  yloc1<-c(min(xdesign),max(xdesign))
+  yloc1<-c(-max(abs(optmatrix)),max(abs(optmatrix)))
   points(xloc1,yloc1,pch=NaN)
   lines(xloc1,yloc1,lwd=2,lty="solid")
   xlp<-rep(xloc1,nx)
@@ -244,7 +244,7 @@ function(data,out,xlu=NaN)
   {
     points(xlp[i],optp[i],col=cols[i],cex=3)
   }
-  legend(0.5,max(xdesign)+(max(xdesign)-min(xdesign))/4,names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
+  legend(0.5,max(abs(optmatrix))+0.25*max(abs(optmatrix)),names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
 
 
   reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
@@ -329,7 +329,7 @@ function(data,out,xlu=NaN)
     ####### End: Target Values #######
     ##################################
     
-  yloc1<-c(0,1.1)
+  yloc1<-c(0,1.25)
   points(xloc1,yloc1,pch=NaN)
   lines(xloc1,yloc1,lwd=2,lty="solid")
   nam<-names(data)[(nx+1):(nx+ny)]

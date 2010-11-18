@@ -35,11 +35,11 @@ function(data,out)
   xaxis2<-1:(numbW+ny-1)
   xaxis1names<-paste("W",xaxis1,sep="")
   parameternames<-paste("X",1:nx,sep="")
-  yaxis1<-seq(signif(min(xdesign),digits=3),signif(max(xdesign),digits=3),signif((max(xdesign)-min(xdesign))/2,digits=3))
+  yaxis1<-seq(-signif(max(optmatrix),digits=3),signif(max(optmatrix),digits=3),signif(max(optmatrix),digits=3))
 
   # left plot
   par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-  plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(min(xdesign),max(xdesign)+(max(xdesign)-min(xdesign))/4),ylab="",xaxt="n",yaxt="n",pch=4)
+  plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(optmatrix),max(optmatrix)+0.25*max(optmatrix)),ylab="",xaxt="n",yaxt="n",pch=4)
   mtext("Parameter Setting",side=3,at=1,cex=0.6)
   axis(1,at=xaxis1,labels=xaxis1names)
   axis(2,at=yaxis1)
@@ -49,7 +49,7 @@ function(data,out)
     points(xaxis1,optmatrix[,i],col=cols[i],pch=4)
     lines(xaxis1,optmatrix[,i],col=cols[i])
   }
-  legend(0.5,max(xdesign)+(max(xdesign)-min(xdesign))/4,names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
+  legend(0.5,max(optmatrix)+0.25*max(optmatrix),names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
 
 
   reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)

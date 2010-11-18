@@ -27,29 +27,6 @@ ny<-2
 tau<-c(0,0.05)
 
 
-
-# Evaluating Funtions for Modelling the Mean and Dispersion for both the Responses:
-mean1<-function(x)
-{
-  return(26.73-11.56*x[2]+3.34*x[1]+1.9*x[1]*x[2])
-}
-mean2<-function(x)
-{
-  return(0.0636+0.0104*x[2]+0.0017*x[1]-0.0033*x[2]^2+0.004*x[1]*x[2])
-}
-var1<-function(x)
-{
-  return(21.2-3.34*x[1]+8.8*x[2]+0.41*x[1]^2+1.53*x[2]^2-1.17*x[1]*x[2])
-}
-var2<-function(x)
-{
-  return(4.05*10^(-5)+1.83*10^(-6)*x[2]+8.97*10^(-6)*x[2]^2)
-}
-
-# Put the Evaluating functions in a list:
-meanmodel<-list(mean1,mean2)
-varmodel<-list(var1,var2)
-
 # Set the Values for the Weight Matrices
 Wstart<--9.21
 numbW<-11
@@ -58,8 +35,8 @@ Wend<-9.21
 
 # JOP calculates the optimal design parameters and the appropriate predicted responses.
 # Furthermore it produces the joint optimization plot
-out<-JOP(nx=nx,ny=ny,Wstart=Wstart,Wend=Wend,
-numbW=numbW,d=d,optreg=optreg,data=dataset,tau=tau,
-mean.model=meanmodel,var.model=varmodel,solver)
+out<-JOP(nx=nx,ny=ny,Wstart=Wstart,Wend=Wend,numbW=numbW,d=d,optreg=optreg,tau=tau,interact=1,
+                quad=1,main.disp=1,interact.disp=1,quad.disp=1,data=dataset,solver=solver)
+
 return(out)
 }

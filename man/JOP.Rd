@@ -18,9 +18,9 @@ produced by \code{JOP} and conducts the visualization without optimization. Furt
 the corresponding design parameters. 
 }
 \usage{
-JOP(nx = 2, ny = 1, Wstart = 1, Wend = 1,
- numbW = 1, d = c(1, 0),optreg=0,data = NULL, tau = NULL, 
- mean.model = NULL, var.model = NULL, solver = 0)
+JOP(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),optreg=0,tau=NULL,
+interact=0,quad=0,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,
+mean.model=NULL,var.model=NULL,solver=0)
 oplot(data, out)
 JOPexampledata()
 JOPexample(solver=0,optreg=0)
@@ -47,13 +47,52 @@ locate(data,out,xlu=NaN)
   a vector with values to calculate the sequence of weight matrices (see Details)
 }
   \item{optreg}{
-  User can choose the Optimization region. \code{optreg=1}: cube, \code{optreg=0}: sphere (see Details)
+  User can choose the Optimization region. 
+  
+  \code{optreg=1}: cube, 
+  
+  \code{optreg=0}: sphere (see Details)
 }
   \item{data}{
   the data set (data.frame)
 }
   \item{tau}{
   vector of target values for the corresponding responses
+}
+\item{interact}{
+  User can decide whether the interaction effects should be included into the mean model,
+  
+  \code{interact=1:} interaction effects included,  
+  
+  \code{interaction=0:} interaction effects not included 
+}
+\item{quad}{
+  User can decide whether the quadratic effects should be included into the mean model, 
+  
+  \code{quad=1:} quadratic effects included, 
+  
+  \code{quad=0:} quadratic effects not included 
+}
+\item{main.disp}{
+  User can decide whether the main effects should be included into the dispersion model,
+  
+  \code{main.disp=1:} main effects included, 
+  
+  \code{main.disp=0:} main effects not included 
+}
+\item{interact.disp}{
+  User can decide whether the interaction effects should be included into the dispersion model,
+  
+  \code{interact.disp=1:} interactions effects included, 
+  
+  \code{interact.disp=0:} interactions effects included 
+}
+\item{quad.disp}{
+  User can decide whether the quadratic effects should be included into the dispersion model, 
+  
+  \code{quad.disp=1:} quadratic effects included, 
+  
+  \code{quad.disp=0:} quadratic effects included 
 }
   \item{mean.model}{
   list of functions that model the mean for the corresponding response (see Details)
@@ -62,11 +101,19 @@ locate(data,out,xlu=NaN)
   list of functions that model the variance for the corresponding response (see Details)
 }
   \item{solver}{
-  optional. A numeric vector. Choices are 0, 1, 2. If the user sets \code{solver=1},
-  then JOP uses 'gosolnp' for optimization. If the user sets \code{solver=2},
-  then JOP uses 'genoud' for optimization. Otherwise (\code{solver=0}) JOP uses nlminb for optimization. The default is \code{solver=0}.
+  optional. A numeric vector. Choices are 0, 1, 2. 
+  
+  If the user sets \code{solver=1},
+  then JOP uses 'gosolnp' for optimization. 
+  
+  If the user sets \code{solver=2},
+  then JOP uses 'genoud' for optimization. 
+  
+  Otherwise (\code{solver=0}) JOP uses nlminb for optimization. 
+  
+  The default is \code{solver=0}.
 }
-  \item{out}{object from JOP 
+ \item{out}{object from JOP 
 }
   \item{xlu}{The x-coordinate that indicates where the user assumes a "good" compromise,
   see Details  
@@ -80,6 +127,7 @@ JOP returns a list containing the following elements:
 \item{StandardDeviation}{The i-th row of this matrix contains the standard deviation value for each response}
 \item{OptimalValue}{This vector contains the optimal value of the risk function for each optimal parameter setting}
 \item{TargetValue}{Contains the target values for the correspoding responses}
+\item{DGLM}{If no models assigned then the list DGLM contains the calculated models for the mean and dispersion for every response}
 }
 \details{Let \eqn{Y=(Y_1,\ldots,Y_p)}{Y=(Y_1,...,Y_p)} denote a vector of responses, \eqn{\tau=(\tau_1,\ldots,\tau_p)}{
 tau=(tau_1,...,tau_p)} a vector of target values and \eqn{x=(x_1,\ldots,x_k)}{x=x_1,...,x_k} a vector of design parameters. 
@@ -101,6 +149,10 @@ Then \eqn{\mbox{diagW}_i}{diagWi} is calculated in the following way:
 \deqn{\log(\mbox{diagW}_i)=d*a_i,\quad i=1\mbox{,} \ldots \mbox{,} \mbox{numbW}}{log(diagW_i)=d*a_i ,  i=1 , ... , numbW}    
 
 The functions in the lists \code{mean.model} and \code{var.model} must depend on the parameter vector x and should only return the function value. 
+If the user does not input the lists \code{mean.model} and \code{var.model} then \code{JOP} builds double generalized linear models for the mean and dispersion
+for every response by means of the package \code{JointModeling}. The user has to indicate if the main, interaction or quadratic effects have to be 
+included in the formula for both mean and dispersion.  Starting with the full model including all selected effects \code{JOP} conducts a backward selection 
+and successively removes the least significant covariate.  
 
 After the data is prepared, the optimization routine starts and calculates the optimal design parameters and the appropriate predicted responses
 for every weight matrix and every response variable. The optimization region is a sphere around the origin if the user chooses \code{optreg=0}
@@ -138,8 +190,8 @@ The value \code{xlu} indicates where
 the user assumes a "good" compromise on the right hand plot. Afterwards a vertical line through the 
 chosen x-coordinate is displayed on the left hand and the right hand plot. The intersection points
 are the chosen responses on the right hand plot and the corresponding design parameters on the left 
-hand plot. In addition the function \code{locate} returns a list that contains the chosen responses and its proper
-design parameters.
+hand plot. In addition the function \code{locate} returns a list that contains the chosen responses, its proper
+design parameters and calculated double generalized linear models.
 }
 \references{
 Sonja Kuhnt and Martina Erdbruegge (2004), "A strategy of robust paramater design for multiple responses", 
@@ -149,7 +201,9 @@ Joseph J. Pignatiello (1993), "Strategies for robust multiresponse quality engin
 
 Walter R. Mebane,Jr., and Jasjeet Singh Sekhon (2007), "Genetic Optimization Using Derivatives: The rgenoud package for R." Journal of Statistical Software, Forthcoming. \url{http://www.jstatsoft.org/}.  
 
-Alexios Ghalanos and Stefan Theussl (2010). Rsolnp: General Non-linear Optimization Using Augmented Lagrange Multiplier Method. R package version 1.0-2. 
+Alexios Ghalanos and Stefan Theussl (2010). Rsolnp: General Non-linear Optimization Using Augmented Lagrange Multiplier Method. R package version 1.0-6. 
+
+Mathieu Ribatet and Bertrand Iooss (2010). JointModeling: Joint Modelling of Mean and Dispersion. R package version 1.0-2.
 }
 \author{
 Sonja Kuhnt and Nikolaus Rudak
