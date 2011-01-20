@@ -1,4 +1,4 @@
-JOPexample<-function(solver=0,optreg=0)
+JOPexample<-function(solver=0,optreg=0,no.col=TRUE)
 {
 # Example: Sheet metal hydroforming process
 dataset<-as.data.frame(t(matrix(c(1.00,1.00,7.9966,0.067,1.00,1.00,20.3601,0.083,
@@ -36,7 +36,8 @@ Wend<-9.21
 # JOP calculates the optimal design parameters and the appropriate predicted responses.
 # Furthermore it produces the joint optimization plot
 out<-JOP(nx=nx,ny=ny,Wstart=Wstart,Wend=Wend,numbW=numbW,d=d,optreg=optreg,tau=tau,interact=1,
-                quad=1,main.disp=1,interact.disp=1,quad.disp=1,data=dataset,solver=solver)
+                quad=1,main.disp=1,interact.disp=1,quad.disp=1,drplot=TRUE,data=dataset,mean.model=NULL,var.model=NULL,solver=solver,no.col)
 
 return(out)
 }
+

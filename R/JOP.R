@@ -132,7 +132,7 @@ crformD<-function(x)
        ###############################################
     
   JOP<-function(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),optreg=0,tau=NULL,interact=0,
-                quad=0,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0)
+                quad=0,main.disp=0,interact.disp=0,quad.disp=0,drplot=TRUE,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
   {
   ## solver=0: nlminb
   ## solver=1: rgenoud
@@ -149,24 +149,7 @@ crformD<-function(x)
   #                      Formula: log wt= d*log at
   #                      Where: log at=seq(Wstart,Wend,(Wstart-Wend)/numbW)
 
-  if(is.null(data))
-  {
-    return("data required!!")
-  }     
-  
 
-  if(length(d)!=ny)
-  {
-    return("Check Dimension of d! Have to agree with number of responses")
-  }   
-  if(is.null(tau))
-  {
-    return("Type in the target values, please!")
-  } 
-  if(solver!=0 && solver!=1 && solver!=2)
-  {
-    return("Choose a solver! '0' for 'nlminb' or '1' for goslnp or '2' for genoud....")
-  } 
   if(nx<2)
   {
     return("More then 1 variable required!!")
@@ -179,7 +162,7 @@ crformD<-function(x)
       #############################################
       
   shifter<-0
-  if(is.null(mean.model) && is.null(var.model))
+  if(is.null(mean.model) & is.null(var.model))
   {
     shifter<-1
     print("Automatic Modeling starts...\n")
@@ -281,7 +264,7 @@ crformD<-function(x)
     outmod<-vector("list",ny)
     namenlist<-as.list(namen[(nx+1):(nx+ny)])
     names(outmod)<-namenlist
-
+    
     wert<-qt(0.95,dim(data)[1]-nx-1)
     for(i in 1:ny)
     {
@@ -334,11 +317,35 @@ crformD<-function(x)
       lxnames<-NULL
       lxnamesd<-NULL
     }
+    # If the user only wants to calculate models, 
+    # then outmod is returned
+    if(drplot==FALSE)
+    {
+      return(outmod)
+    }
     
+    if(is.null(data))
+    {
+      return("data required!!")
+    }     
+    
+  
+    if(length(d)!=ny)
+    {
+      return("Check Dimension of d! Have to agree with number of responses")
+    }   
+    if(is.null(tau))
+    {
+      return("Type in the target values, please!")
+    } 
+    if(solver!=0 && solver!=1 && solver!=2)
+    {
+      return("Choose a solver! '0' for 'nlminb' or '1' for goslnp or '2' for genoud....")
+    } 
     ### Function for Mean and Disp
     mean.model<-vector("list",ny)
     var.model<-vector("list",ny)
-  
+
     meanmd<-function(x,p)
     {
       allx<-NULL
@@ -452,7 +459,7 @@ crformD<-function(x)
            zw<-NULL 
          }  
          A<-diag(diagA)
-  
+         print(A)
          #Cost Matrix C
          for(i in 1:length(W))
          {
@@ -882,7 +889,8 @@ crformD<-function(x)
     deviation<-sqrt(deviation)
     cat("...Optimal Parameters and Responses received...\n")
     cat("\n")
- 
+    if(no.col==FALSE)
+    {
     #################################
     #################################
     #### Joint optimization Plot ####
@@ -902,14 +910,14 @@ crformD<-function(x)
     }     
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=4)
+    plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=yaxis1)
     lines(xaxis1,optmatrix[,1])        
     for(i in 2:nx)
     {  
-      points(xaxis1,optmatrix[,i],col=cols[i],pch=4)
+      points(xaxis1,optmatrix[,i],col=cols[i],pch=NA)
       lines(xaxis1,optmatrix[,i],col=cols[i])
     }
     legend(0.5,max(abs(optmatrix))+0.25*max(abs(optmatrix)),names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
@@ -938,36 +946,60 @@ crformD<-function(x)
 
   
     par(fig=c(0.5,0.95,0.15,0.85),new=TRUE,bty="l",pty="s",las=1)
-    plot(xaxis1,reoptplot[,1],xlab="Weight Matrices",ylab="",ylim=c(0,1.25+max(devstand)),xaxt="n",yaxt="n",pch=4)
+    plot(xaxis1,reoptplot[,1],xlab="Weight Matrices",ylab="",ylim=c(0,1.25+max(devstand)),xaxt="n",yaxt="n",pch=NA)
     mtext("Predicted Response",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=c(0.25,0.625,1),labels=c("","",""))
 
-    lines(xaxis1,reoptplot[,1],col=cols[nx+1])
+    
+
+    #deviation
+    if(standard==TRUE)
+    {
+      for(j in 1:ny)
+      {
+        point11<-NULL
+        point12<-NULL
+        point21<-NULL
+        point22<-NULL
+        for(i in 1:numbW)
+        {
+          point11[i]<-i
+          point21[i]<-numbW-i+1
+          point22[i]<-reoptplot[numbW-i+1,j]+devstand[numbW-i+1,j]
+          point12[i]<-reoptplot[i,j]-devstand[i,j]
+          #points(point1,point2,col=cols[nx+j],pch=NA)
+          #lines(point1,point2,col=cols[nx+j])
+        }
+        point1<-c(point11,point21)
+        point2<-c(point12,point22)
+        polygon(point1,point2,col=cols[nx+j],border=FALSE)
+      }    
+    
+    lines(xaxis1,reoptplot[,1],col="black")#cols[nx+1])                            
     for(i in 2:ny)
     {
-      points(xaxis1,reoptplot[,i],col=cols[nx+i],pch=4)
-      lines(xaxis1,reoptplot[,i],col=cols[nx+i])
+      points(xaxis1,reoptplot[,i],pch=NA)
+      lines(xaxis1,reoptplot[,i],col="black")#cols[nx+i])
     }
     for(i in 1:ny)
     {
       mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
     }
-    #deviation
-    for(i in 1:numbW)
+    }
+    if(standard==FALSE)
     {
-      point1<-NULL
-      point2<-NULL
-      point1<-c(i,i)
-      for(j in 1:ny)
+      lines(xaxis1,reoptplot[,1],col=cols[nx+1])                            
+      for(i in 2:ny)
       {
-        point2[1]<-reoptplot[i,j]+devstand[i,j]
-        point2[2]<-reoptplot[i,j]-devstand[i,j]
-        points(point1,point2,col=cols[nx+j],pch=4)
-        lines(point1,point2,col=cols[nx+j])
+        points(xaxis1,reoptplot[,i],pch=NA)
+        lines(xaxis1,reoptplot[,i],col=cols[nx+i])
+      }
+      for(i in 1:ny)
+      {
+        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
       }
     }
-
     ######################
     ### Target Values ####
     ######################
@@ -1032,6 +1064,184 @@ crformD<-function(x)
       optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau)
       names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue") 
     }
+    
+    }
+    else
+    {
+    #################################
+    #################################
+    #### Joint optimization Plot ####
+    #################################
+    #################################
+    
+    xaxis1<-1:numbW
+    xaxis2<-1:(numbW+ny-1)
+    xaxis1names<-paste("W",xaxis1,sep="")
+    parameternames<-paste("X",1:nx,sep="")
+    yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
+    cols1<-gray(seq(0.5,0.7,length=nx))
+    cols2<-gray(seq(0.5,0.7,length=ny))
+    cols3<-gray(seq(0.75,0.95,length=ny))
+    
+    # left plot
+    par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
+    plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
+    mtext("Parameter Setting",side=3,at=1,cex=0.6)
+    axis(1,at=xaxis1,labels=xaxis1names)
+    axis(2,at=yaxis1)
+    lines(xaxis1,optmatrix[,1])        
+    for(i in 2:nx)
+    {  
+      points(xaxis1,optmatrix[,i],pch=NA)
+      lines(xaxis1,optmatrix[,i],col=cols1[i])
+    }
+    legend(0.5,max(abs(optmatrix))+0.25*max(abs(optmatrix)),names(data)[1:nx],col=cols1[1:nx],bty="n",lwd=1)
+  
+    
+    
+    # right Plot
+    
+      
+    reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
+    devstand<-matrix(NaN,ncol=ny,nrow=numbW)
+    for(i in 1:ny)
+    {
+      if(max(reoptmatrix[,i])>tau[i])
+      {
+       reoptplot[,i]<-reoptmatrix[,i]/max(reoptmatrix[,i])
+       devstand[,i]<-deviation[,i]/max(reoptmatrix[,i])
+      }
+      else
+      {
+       reoptplot[,i]<-reoptmatrix[,i]/tau[i]
+       devstand[,i]<-deviation[,i]/tau[i] 
+      }
+    }
+  
+
+  
+    par(fig=c(0.5,0.95,0.15,0.85),new=TRUE,bty="l",pty="s",las=1)
+    plot(xaxis1,reoptplot[,1],xlab="Weight Matrices",ylab="",ylim=c(0,1.25+max(devstand)),xaxt="n",yaxt="n",pch=NA)
+    mtext("Predicted Response",side=3,at=1,cex=0.6)
+    axis(1,at=xaxis1,labels=xaxis1names)
+    axis(2,at=c(0.25,0.625,1),labels=c("","",""))
+
+    
+
+    #deviation
+    if(standard==TRUE)
+    {
+      for(j in 1:ny)
+      {
+        point11<-NULL
+        point12<-NULL
+        point21<-NULL
+        point22<-NULL
+        for(i in 1:numbW)
+        {
+          point11[i]<-i
+          point21[i]<-numbW-i+1
+          point22[i]<-reoptplot[numbW-i+1,j]+devstand[numbW-i+1,j]
+          point12[i]<-reoptplot[i,j]-devstand[i,j]
+          #points(point1,point2,col=cols[nx+j],pch=NA)
+          #lines(point1,point2,col=cols[nx+j])
+        }
+        point1<-c(point11,point21)
+        point2<-c(point12,point22)
+        polygon(point1,point2,col=cols3[j],border=FALSE)
+      }    
+
+    
+      lines(xaxis1,reoptplot[,1],col="black")#cols2[1])#cols[nx+1])                            
+      for(i in 2:ny)
+      {
+        points(xaxis1,reoptplot[,i],pch=NA)
+        lines(xaxis1,reoptplot[,i],col="black")#cols2[i])
+      }
+      for(i in 1:ny)
+      {
+        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols2[i],cex=0.6,line=1.2)
+      }
+    }
+    if(standard==FALSE)
+    {
+      lines(xaxis1,reoptplot[,1],col=cols2[1])#cols[nx+1])                            
+      for(i in 2:ny)
+      {
+        points(xaxis1,reoptplot[,i],pch=NA)
+        lines(xaxis1,reoptplot[,i],col=cols2[i])
+      }
+      for(i in 1:ny)
+      {
+        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols2[i],cex=0.6,line=1.2)
+      }
+    }
+    ######################
+    ### Target Values ####
+    ######################
+        
+    axis4<-NULL
+    for(i in 1:ny)
+    {
+      axis4[i]<-tau[i]/max(reoptmatrix[,i])
+    }
+    zaehler<-vector("list",length(tau))
+    for(i in 1:length(tau))
+    {
+    counter<-NULL
+      for(j in 1:length(tau))
+      {
+        if(abs(axis4[i]-axis4[j])<0.065 && i!=j)
+        {
+          counter[i]<-j
+        }
+      }
+      zaehler[[i]]<-sort(c(i,counter))
+    }
+    for(i in 1:length(tau))
+    {
+      point1<-NULL
+      point2<-NULL
+      for(j in 1:length(zaehler[[i]]))
+      {
+        if(i==zaehler[[i]][j])
+        {
+          point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
+          point2<-c(axis4[i],axis4[i])
+          lines(point1,point2,col=cols2[i])
+          mtext(signif(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols2[i],cex=0.6,line=1.2)
+        }
+      }
+    }  
+
+    ##################################
+    ####### End: Target Values #######
+    ##################################
+    
+    nam<-names(data)[(nx+1):(nx+ny)]
+    for(i in 1:length(nam))
+    {
+      nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=") 
+    }
+    legend(numbW*(0.55),1.25+max(devstand),nam,col=cols2,bty="n",lwd=1)#1.25+max(devstand)
+    cat("...Plot is done!\n")
+    dimnames(optmatrix)<-list(xaxis1names,names(data)[1:nx])
+    dimnames(reoptmatrix)<-list(xaxis1names,names(data)[(nx+1):(nx+ny)])
+    dimnames(deviation)<-list(xaxis1names,names(data)[(nx+1):(nx+ny)])
+    optval<-as.matrix(optval)
+    dimnames(optval)<-list(xaxis1names,c(""))
+    if(shifter==1)
+    {
+      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,outmod)
+      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","DGLM") 
+    }
+    else
+    {
+      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau)
+      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue") 
+    }
+    }
     return(optimres)
 }
+      
       

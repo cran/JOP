@@ -18,13 +18,12 @@ produced by \code{JOP} and conducts the visualization without optimization. Furt
 the corresponding design parameters. 
 }
 \usage{
-JOP(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),optreg=0,tau=NULL,
-interact=0,quad=0,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,
-mean.model=NULL,var.model=NULL,solver=0)
-oplot(data, out)
+JOP(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),optreg=0,tau=NULL,interact=0,
+quad=0,main.disp=0,interact.disp=0,quad.disp=0,drplot=TRUE,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
+oplot(data, out,no.col=FALSE,standard=TRUE)
 JOPexampledata()
-JOPexample(solver=0,optreg=0)
-locate(data,out,xlu=NaN)
+JOPexample(solver=0,optreg=0,no.col=TRUE)
+locate(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -94,6 +93,11 @@ locate(data,out,xlu=NaN)
   
   \code{quad.disp=0:} quadratic effects included 
 }
+    \item{drplot}{ 
+  If TRUE (by default), then the optimization will be performed and the joint optimization will
+  be displayed. If FALSE, then only a list containing the mean and dispersion models for
+  every response will be returned.  
+  }
   \item{mean.model}{
   list of functions that model the mean for the corresponding response (see Details)
 }
@@ -117,6 +121,12 @@ locate(data,out,xlu=NaN)
 }
   \item{xlu}{The x-coordinate that indicates where the user assumes a "good" compromise,
   see Details  
+  }
+    \item{no.col}{ 
+  If TRUE the plot will be gray scaled. Otherwise the plot will be coloured.
+  }
+    \item{standard}{ 
+  If TRUE the standard deviations will be displayed on the right hand plot. 
   }
 }
 
@@ -151,7 +161,8 @@ Then \eqn{\mbox{diagW}_i}{diagWi} is calculated in the following way:
 The functions in the lists \code{mean.model} and \code{var.model} must depend on the parameter vector x and should only return the function value. 
 If the user does not input the lists \code{mean.model} and \code{var.model} then \code{JOP} builds double generalized linear models for the mean and dispersion
 for every response by means of the package \code{JointModeling}. The user has to indicate if the main, interaction or quadratic effects have to be 
-included in the formula for both mean and dispersion.  Starting with the full model including all selected effects \code{JOP} conducts a backward selection 
+included in the formula for both mean and dispersion. We assume a normal distribution with the canonical link for the mean model and 
+a gamma distribution for the dispersion with log-link. Starting with the full model including all selected effects \code{JOP} conducts a backward selection 
 and successively removes the least significant covariate.  
 
 After the data is prepared, the optimization routine starts and calculates the optimal design parameters and the appropriate predicted responses
