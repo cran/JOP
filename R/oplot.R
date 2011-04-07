@@ -40,7 +40,7 @@ function(data,out,no.col=FALSE,standard=TRUE)
   
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(optmatrix),max(optmatrix)+0.25*max(optmatrix)),ylab="",xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(optmatrix),max(optmatrix)+0.25*max(optmatrix)),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=yaxis1)
@@ -204,7 +204,7 @@ function(data,out,no.col=FALSE,standard=TRUE)
     
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=yaxis1)
@@ -262,11 +262,11 @@ function(data,out,no.col=FALSE,standard=TRUE)
       polygon(point1,point2,col=cols2[j],border=FALSE)
       }
           
-      lines(xaxis1,reoptplot[,1],col="black",lty=1)#cols2[1])#cols[nx+1])                            
+      lines(xaxis1,reoptplot[,1],lty=1,col=cols3[1])#cols2[1])#cols[nx+1])                            
       for(i in 2:ny)
       {
         points(xaxis1,reoptplot[,i],pch=NA)
-        lines(xaxis1,reoptplot[,i],col="black",lty=i)#=cols2[i])
+        lines(xaxis1,reoptplot[,i],lty=i,col=cols3[i])#=cols2[i])
       }
       for(i in 1:ny)
       {

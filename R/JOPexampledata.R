@@ -15,7 +15,7 @@ dataset<-as.data.frame(t(matrix(c(1.00,1.00,7.9966,0.067,1.00,1.00,20.3601,0.083
 0.00,0.00,15.4458,0.066,0.00,0.00,30.3393,0.070,0.00,0.00,29.7673,0.057,0.00,0.00,35.1129,0.062,
 0.00,-1.41,35.0273,0.052,0.00,-1.41,45.1586,0.046,0.00,-1.41,46.9272,0.030,
 0.00,-1.41,42.3516,0.033), nrow=4)))
-dimnames(dataset)[[2]] <- c("K", "D","Area","RBT")
+dimnames(dataset)[[2]] <- c("X1", "X2","Y1","Y2")
 
 
 # Evaluating Funtions for Modelling the Mean and Dispersion for both the Responses:

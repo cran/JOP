@@ -3,6 +3,7 @@
 locate <-
 function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
 {
+  numbW<-dim(out$Responses)[1]
   ##  out is output of 'jointplot'
   if(no.col==FALSE)
   {
@@ -17,7 +18,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     }
     if(!is.nan(xlu))
     {
-      if(xlu<1 || xlu>11)
+      if(xlu<1 || xlu>numbW)
       {
         cat("Choose a x-coordinate between 1 and numbW")
         cat("\n")
@@ -38,7 +39,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     {
       cols<-cols[-7]
     }
-    numbW<-dim(out$Responses)[1]
+
     xdesign<-data[,1:nx]
     optmatrix<-out[[1]]
     reoptmatrix<-out[[2]]
@@ -54,7 +55,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
   
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=yaxis1)
@@ -248,7 +249,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
   
     # left plot
     par(fig=c(0,0.45,0.15,0.85),new=TRUE,lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=yaxis1)
@@ -395,13 +396,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     opt<-list(optp,reoptp)
   
     names(opt)<-list("ChosenParameters","ChosenResponses")
-    cat("Chosen Responses:\n")
-    cat("\n")
-    print(opt[[2]])
-    cat("\n")  
-    cat("Corresponding Design Parameters:\n")
-    cat("\n")
-    print(opt[[1]])  
+
     return(opt)
   }
   else
@@ -417,7 +412,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     }
     if(!is.nan(xlu))
     {
-      if(xlu<1 || xlu>11)
+      if(xlu<1 || xlu>numbW)
       {
         cat("Choose a x-coordinate between 1 and numbW")
         cat("\n")
@@ -454,11 +449,11 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
     cols1<-gray(seq(0.5,0.6,length=nx))
     cols3<-gray(seq(0.5,0.6,length=ny))
-    cols2<-gray(seq(0.75,0.95,length=ny))
+    cols2<-gray(seq(0.85,0.95,length=ny))
     
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=yaxis1)
@@ -651,7 +646,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
   
     # left plot
     par(fig=c(0,0.45,0.15,0.85),new=TRUE,lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weigth Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=yaxis1)
@@ -807,13 +802,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     opt<-list(optp,reoptp)
   
     names(opt)<-list("ChosenParameters","ChosenResponses")
-    cat("Chosen Responses:\n")
-    cat("\n")
-    print(opt[[2]])
-    cat("\n")  
-    cat("Corresponding Design Parameters:\n")
-    cat("\n")
-    print(opt[[1]])  
+
     return(opt)
     }
 }
