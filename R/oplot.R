@@ -3,7 +3,7 @@
 oplot <-
 function(data,out,no.col=FALSE,standard=TRUE)
 {
-  ##  out is output of 'jointplot'
+  ##  out is output of 'JOP'
   if(no.col==FALSE)
   {
     ## Warning Messages:
@@ -13,7 +13,7 @@ function(data,out,no.col=FALSE,standard=TRUE)
     }
     if(is.null(out))
     {
-      return("Run 'jointplot' first! 'oplot' needs output of 'jointplot'!")
+      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
     }
   
     ## Setting Values
@@ -36,11 +36,11 @@ function(data,out,no.col=FALSE,standard=TRUE)
     xaxis2<-1:(numbW+ny-1)
     xaxis1names<-paste("W",xaxis1,sep="")
     parameternames<-paste("X",1:nx,sep="")
-    yaxis1<-seq(-signif(max(optmatrix),digits=3),signif(max(optmatrix),digits=3),signif(max(optmatrix),digits=3))
+    yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
   
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(optmatrix),max(optmatrix)+0.25*max(optmatrix)),ylab="",xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
     axis(1,at=xaxis1,labels=xaxis1names)
     axis(2,at=yaxis1)
@@ -50,7 +50,7 @@ function(data,out,no.col=FALSE,standard=TRUE)
       points(xaxis1,optmatrix[,i],col=cols[i],pch=NA)
       lines(xaxis1,optmatrix[,i],col=cols[i])
     }
-    legend(0.5,max(optmatrix)+0.25*max(optmatrix),names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
+    legend("topright",names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
   
   
     reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
@@ -163,7 +163,7 @@ function(data,out,no.col=FALSE,standard=TRUE)
     {
       nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=")
     }
-    legend(numbW*(0.55),1.25+max(devstand),nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
+    legend("topright",nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
   }
   else
   {
@@ -174,7 +174,7 @@ function(data,out,no.col=FALSE,standard=TRUE)
     }
     if(is.null(out))
     {
-      return("Run 'jointplot' first! 'oplot' needs output of 'jointplot'!")
+      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
     }
   
     ## Setting Values
@@ -214,7 +214,7 @@ function(data,out,no.col=FALSE,standard=TRUE)
       points(xaxis1,optmatrix[,i],pch=NA)
       lines(xaxis1,optmatrix[,i],lty=i,col=cols3[i])
     }
-    legend(0.5,max(abs(optmatrix))+0.25*max(abs(optmatrix)),names(data)[1:nx],lty=1:nx,bty="n",lwd=1)
+    legend("topright",names(data)[1:nx],lty=1:nx,bty="n",lwd=1)
   
     
     
@@ -333,7 +333,7 @@ function(data,out,no.col=FALSE,standard=TRUE)
     {
       nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=") 
     }
-    legend(numbW*(0.55),1.25+max(devstand),nam,col=cols3,lty=1:ny,bty="n",lwd=1)#1.25+max(devstand)
+    legend("topright",nam,col=cols3,lty=1:ny,bty="n",lwd=1)#1.25+max(devstand)
   }
   return("Plot is done!")
 }

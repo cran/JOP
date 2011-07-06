@@ -4,7 +4,7 @@ locate <-
 function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
 {
   numbW<-dim(out$Responses)[1]
-  ##  out is output of 'jointplot'
+  ##  out is output of 'JOP'
   if(no.col==FALSE)
   {
     ## Warning Messages:
@@ -14,7 +14,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     }
     if(is.null(out))
     {
-      return("Run 'jointplot' first! 'oplot' needs output of 'jointplot'!")
+      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
     }
     if(!is.nan(xlu))
     {
@@ -65,7 +65,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       points(xaxis1,optmatrix[,i],col=cols[i],pch=NA)
       lines(xaxis1,optmatrix[,i],col=cols[i])
     }
-    legend(0.5,max(abs(optmatrix))+0.25*max(abs(optmatrix)),names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
+    legend("topright",names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
   
   
     reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
@@ -179,7 +179,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=")
     }
      
-    legend(numbW*(0.55),1.25+max(devstand),nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
+    legend("topright",nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
   
   
     ####
@@ -214,7 +214,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       optp<-out$Parameters[numbW,]
       reoptp<-out$Responses[numbW,]
     }  
-      ##  out is output of 'jointplot'
+      ##  out is output of 'JOP'
   
     ## Warning Messages:
     if(is.null(data))
@@ -223,7 +223,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     }
     if(is.null(out))
     {
-      return("Run 'jointplot' first! 'oplot' needs output of 'jointplot'!")
+      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
     }
     cols<-1:(nx+ny+1)
     if((nx+ny)>=7)
@@ -270,7 +270,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     {
       points(xlp[i],optp[i],col=cols[i],cex=3)
     }
-    legend(0.5,max(abs(optmatrix))+0.25*max(abs(optmatrix)),names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
+    legend("topright",names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
   
   
     reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
@@ -391,7 +391,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     {
       points(xlp[i],reoptp[i]/max(reoptmatrix[,i]),col="black",cex=3)#cols[nx+i],cex=3)
     }
-    legend(numbW*(0.55),1.25+max(devstand),nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
+    legend("topright",nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
   
     opt<-list(optp,reoptp)
   
@@ -408,7 +408,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     }
     if(is.null(out))
     {
-      return("Run 'jointplot' first! 'oplot' needs output of 'jointplot'!")
+      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
     }
     if(!is.nan(xlu))
     {
@@ -463,7 +463,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       points(xaxis1,optmatrix[,i],pch=NA)
       lines(xaxis1,optmatrix[,i],lty=i,col=cols3[i])
     }
-    legend(0.5,max(abs(optmatrix))+0.25*max(abs(optmatrix)),names(data)[1:nx],lty=1:nx,bty="n",lwd=1)
+    legend("topright",names(data)[1:nx],lty=1:nx,bty="n",lwd=1)
   
     
     
@@ -582,7 +582,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     {
       nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=") 
     }
-    legend(numbW*(0.55),1.25+max(devstand),nam,col=cols3,lty=1:ny,bty="n",lwd=1)#1.25+max(devstand)  
+    legend("topright",nam,col=cols3,lty=1:ny,bty="n",lwd=1)#1.25+max(devstand)  
   
     ####
     ####  Location of points
@@ -616,7 +616,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       optp<-out$Parameters[numbW,]
       reoptp<-out$Responses[numbW,]
     }  
-      ##  out is output of 'jointplot'
+      ##  out is output of 'JOP'
   
     ## Warning Messages:
     if(is.null(data))
@@ -625,7 +625,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     }
     if(is.null(out))
     {
-      return("Run 'jointplot' first! 'oplot' needs output of 'jointplot'!")
+      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
     }
     ## Setting Values
     nx<-dim(out$Parameters)[2]
@@ -667,7 +667,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     {
       points(xlp[i],optp[i],col="black",cex=3)
     }
-    legend(0.5,max(abs(optmatrix))+0.25*max(abs(optmatrix)),names(data)[1:nx],lty=1:nx,col=cols3,bty="n",lwd=1)
+    legend("topright",names(data)[1:nx],lty=1:nx,col=cols3,bty="n",lwd=1)
   
   
     # right Plot
@@ -797,7 +797,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     {
       points(xlp[i],reoptp[i]/max(reoptmatrix[,i]),col="black",cex=3)#cols[nx+i],cex=3)
     }
-    legend(numbW*(0.55),1.25+max(devstand),nam,lty=1:ny,col=cols3,bty="n",lwd=1)
+    legend("topright",nam,lty=1:ny,col=cols3,bty="n",lwd=1)
   
     opt<-list(optp,reoptp)
   
