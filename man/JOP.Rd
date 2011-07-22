@@ -19,11 +19,11 @@ the corresponding design parameters.
 }
 \usage{
 JOP(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),optreg=0,tau=NULL,interact=0,
-quad=0,main.disp=0,interact.disp=0,quad.disp=0,drplot=TRUE,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
-oplot(data, out,no.col=FALSE,standard=TRUE)
+quad=0,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
+oplot(out,no.col=FALSE,standard=TRUE)
 JOPexampledata()
 JOPexample(solver=0,optreg=0,no.col=TRUE)
-locate(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
+locate(out,xlu=NaN,no.col=FALSE,standard=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -93,11 +93,6 @@ locate(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
   
   \code{quad.disp=0:} quadratic effects included 
 }
-    \item{drplot}{ 
-  If TRUE (by default), then the optimization will be performed and the joint optimization will
-  be displayed. If FALSE, then only a list containing the mean and dispersion models for
-  every response will be returned.  
-  }
   \item{mean.model}{
   list of functions that model the mean for the corresponding response (see Details)
 }
@@ -176,7 +171,7 @@ optimal parameter setting for three different start parameters and chooses the o
 restarts of the solver \code{solnp}. \code{solnp} belongs to the class of indirect solvers and implements the augmented Lagrange multiplier
 method with an SQP interior algorithm. The most time consuming solver compared to the last mentioned is \code{genoud}. This routine combines evolutionary 
 search algorithms with derivative-based (Newton or quasi-Newton) methods. If the objective function is nonsmooth or has many local minima,
-the user should choose the \code{goslnp} (\code{solver=1}). Furthermore it is recommendable to choose \code{genoud} (\code{solver=2}), if the objective function
+the user should choose the \code{gosolnp} (\code{solver=1}). Furthermore it is recommendable to choose \code{genoud} (\code{solver=2}), if the objective function
 is very complex and the optimization problem is rather difficult. 
 
 Afterwards the joint optimization plot is displayed. The left-hand plot shows the optimal design parameters for every weight matrix 
@@ -230,13 +225,13 @@ dataset<-data[[1]]
 # It calculates a solution for the data set mentioned above
 out<-JOPexample()
 # Visualization with oplot
-oplot(dataset,out)
+oplot(out)
 # The user may locate a point on the right plot
 # and afterwards a vertical line is displayed 
 # on the left and right plot.
 #
 # Choose the coordinate: 
 xlu<-2
-opt<-locate(dataset,out,xlu)
+opt<-locate(out,xlu)
 }
 

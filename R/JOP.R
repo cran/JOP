@@ -132,15 +132,15 @@ crformD<-function(x)
        ###############################################
     
   JOP<-function(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),optreg=0,tau=NULL,interact=0,
-                quad=0,main.disp=0,interact.disp=0,quad.disp=0,drplot=TRUE,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
+                quad=0,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
   {
-  ## solver=0: nlminb
-  ## solver=1: rgenoud
-  ## optreg=0: Optimization region is a sphere
-  ## optreg=1: Optimization region is a cube
-  ## mean.model, var.model : List of functions of type mean.model<-function(x)
+  ## solver=0:           nlminb
+  ## solver=1:           rgenoud
+  ## optreg=0:           Optimization region is a sphere
+  ## optreg=1:           Optimization region is a cube
+  ## mean.model,var.model: List of functions of type mean.model<-function(x)
   ##                           that return a single response value
-  # Input:
+  # 
   # nx:                  Number of variables
   # ny:                  Number of responses
   # data:                DataFrame
@@ -148,6 +148,12 @@ crformD<-function(x)
   #                      numbW: number of weight matrices
   #                      Formula: log wt= d*log at
   #                      Where: log at=seq(Wstart,Wend,(Wstart-Wend)/numbW)
+  # d:           slope vector specifying the relative importance of the responses
+  # tau:
+  # optreg:                Parameter specifying the optimization region
+  # interact,quad,
+  # main.disp,interact.disp=0,quad.disp: Parameters related to the effects of whole models for mean and dispersion
+  # no.col, standard: graphical parameters
 
 
   if(nx<2)
@@ -317,17 +323,8 @@ crformD<-function(x)
       lxnames<-NULL
       lxnamesd<-NULL
     }
-    # If the user only wants to calculate models, 
-    # then outmod is returned
-    if(drplot==FALSE)
-    {
-      return(outmod)
-    }
-    
-    if(is.null(data))
-    {
-      return("data required!!")
-    }     
+
+  
     
   
     if(length(d)!=ny)
@@ -650,10 +647,10 @@ crformD<-function(x)
     }
     else
     {
-      if(!is.list(mean.model) && !is.list(var.model))
-      {
-        return("mean.model and var.model have to be of type 'list'!")
-      }
+        if(!is.list(mean.model) && !is.list(var.model))
+        {
+          return("mean.model and var.model have to be of type 'list'!")
+        }
   
              ##################################
          ##################################
@@ -831,7 +828,7 @@ crformD<-function(x)
             }
             return(sum(diag(W[[i]]%*%diag(varval)))+sum(t(meanval-tau)%*%W[[i]]%*%(meanval-tau)))  
           }
-          #Optimization is conducted on a sphere
+
       
           # User can choose a solver
           if(solver==0)
@@ -923,31 +920,34 @@ crformD<-function(x)
       optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,optmatrix[xlu,],reoptmatrix[xlu,],diagA)
       names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","RiskminimalParameters", "RiskminimalResponses","diagA") 
     }
-    if(no.col==FALSE)
-    {
+
+    
     #################################
     #################################
     #### Joint optimization Plot ####
     #################################
     #################################
+    
+    if(no.col==FALSE)
+    {
       if(standard==FALSE)
       {
-        oplot(data,optimres,no.col=FALSE,standard=FALSE)
+        oplot(optimres,no.col=FALSE,standard=FALSE)
       }
       else
       {
-        oplot(data,optimres,no.col=FALSE,standard=TRUE)      
+        oplot(optimres,no.col=FALSE,standard=TRUE)      
       }
     }
     else
     {
       if(standard==FALSE)
       {
-        oplot(data,optimres,no.col=TRUE,standard=FALSE)
+        oplot(optimres,no.col=TRUE,standard=FALSE)
       }
       else
       {
-        oplot(data,optimres,no.col=TRUE,standard=TRUE)      
+        oplot(optimres,no.col=TRUE,standard=TRUE)      
       }
     }
     return(optimres)

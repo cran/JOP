@@ -1,20 +1,16 @@
 .packageName<-'locate'
 
 locate <-
-function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
+function(out,xlu=NaN,no.col=FALSE,standard=TRUE)
 {
   numbW<-dim(out$Responses)[1]
   ##  out is output of 'JOP'
   if(no.col==FALSE)
   {
     ## Warning Messages:
-    if(is.null(data))
-    {
-      return("data set is required!")
-    }
     if(is.null(out))
     {
-      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
+      return("Run 'JOP' first! 'locate' needs output of 'JOP'!")
     }
     if(!is.nan(xlu))
     {
@@ -40,7 +36,6 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       cols<-cols[-7]
     }
 
-    xdesign<-data[,1:nx]
     optmatrix<-out[[1]]
     reoptmatrix<-out[[2]]
     deviation<-out[[3]]
@@ -50,8 +45,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     xaxis1<-1:numbW
     xaxis2<-1:(numbW+ny-1)
     xaxis1names<-paste("W",xaxis1,sep="")
-    parameternames<-paste("X",1:nx,sep="")
-    yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
+    yaxis1<-seq(-round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3))
   
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
@@ -65,7 +59,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       points(xaxis1,optmatrix[,i],col=cols[i],pch=NA)
       lines(xaxis1,optmatrix[,i],col=cols[i])
     }
-    legend("topright",names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
+    legend("topright",dimnames(out$Parameters)[[2]],col=cols[1:nx],bty="n",lwd=1)
   
   
     reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
@@ -115,7 +109,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       }
       for(i in 1:ny)
       {
-        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
+        mtext(c(round(0.25*max(reoptmatrix[,i]),digits=2),round(0.625*max(reoptmatrix[,i]),digits=2),round(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
       }
     }
     if(standard==FALSE)
@@ -128,7 +122,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       }
       for(i in 1:ny)
       {
-        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
+        mtext(c(round(0.25*max(reoptmatrix[,i]),digits=2),round(0.625*max(reoptmatrix[,i]),digits=2),round(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
       }    
     }
       ######################
@@ -164,7 +158,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
             point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
             point2<-c(axis4[i],axis4[i])
             lines(point1,point2,col=cols[nx+i])
-            mtext(signif(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols[nx+i],cex=0.6,line=1.2)
+            mtext(round(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols[nx+i],cex=0.6,line=1.2)
           }
         }
       }  
@@ -173,7 +167,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       ####### End: Target Values #######
       ##################################
       
-    nam<-names(data)[(nx+1):(nx+ny)]
+    nam<-dimnames(out$Responses)[[2]]
     for(i in 1:length(nam))
     {
       nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=")
@@ -217,13 +211,9 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       ##  out is output of 'JOP'
   
     ## Warning Messages:
-    if(is.null(data))
-    {
-      return("data set is required!")
-    }
     if(is.null(out))
     {
-      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
+      return("Run 'JOP' first! 'locate' needs output of 'JOP'!")
     }
     cols<-1:(nx+ny+1)
     if((nx+ny)>=7)
@@ -234,7 +224,6 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     nx<-dim(out$Parameters)[2]
     ny<-dim(out$Responses)[2]
     numbW<-dim(out$Responses)[1]
-    xdesign<-data[,1:nx]
     optmatrix<-out[[1]]
     reoptmatrix<-out[[2]]
     deviation<-out[[3]]
@@ -244,8 +233,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     xaxis1<-1:numbW
     xaxis2<-1:(numbW+ny-1)
     xaxis1names<-paste("W",xaxis1,sep="")
-    parameternames<-paste("X",1:nx,sep="")
-    yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
+    yaxis1<-seq(-round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3))
   
     # left plot
     par(fig=c(0,0.45,0.15,0.85),new=TRUE,lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
@@ -270,7 +258,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     {
       points(xlp[i],optp[i],col=cols[i],cex=3)
     }
-    legend("topright",names(data)[1:nx],col=cols[1:nx],bty="n",lwd=1)
+    legend("topright",dimnames(out$Parameters)[[2]],col=cols[1:nx],bty="n",lwd=1)
   
   
     reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
@@ -321,7 +309,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       }
       for(i in 1:ny)
       {
-        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
+        mtext(c(round(0.25*max(reoptmatrix[,i]),digits=2),round(0.625*max(reoptmatrix[,i]),digits=2),round(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
       }
     }
     if(standard==FALSE)
@@ -334,7 +322,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       }
       for(i in 1:ny)
       {
-        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
+        mtext(c(round(0.25*max(reoptmatrix[,i]),digits=2),round(0.625*max(reoptmatrix[,i]),digits=2),round(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols[nx+i],cex=0.6,line=1.2)
       }    
     }
       ######################
@@ -370,7 +358,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
             point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
             point2<-c(axis4[i],axis4[i])
             lines(point1,point2,col=cols[nx+i])
-            mtext(signif(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols[nx+i],cex=0.6,line=1.2)
+            mtext(round(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols[nx+i],cex=0.6,line=1.2)
           }
         }
       }  
@@ -382,7 +370,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     yloc1<-c(0,1.25)
     points(xloc1,yloc1,pch=NaN)
     lines(xloc1,yloc1,lwd=2,lty="solid")
-    nam<-names(data)[(nx+1):(nx+ny)]
+    nam<-dimnames(out$Responses)[[2]]
     for(i in 1:length(nam))
     {
       nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=")
@@ -402,13 +390,9 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
   else
   {
       ## Warning Messages:
-    if(is.null(data))
-    {
-      return("data set is required!")
-    }
     if(is.null(out))
     {
-      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
+      return("Run 'JOP' first! 'locate' needs output of 'JOP'!")
     }
     if(!is.nan(xlu))
     {
@@ -435,7 +419,6 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       cols<-cols[-7]
     }
     numbW<-dim(out[[2]])[1]
-    xdesign<-data[,1:nx]
     optmatrix<-out[[1]]
     reoptmatrix<-out[[2]]
     deviation<-out[[3]]
@@ -445,8 +428,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     xaxis1<-1:numbW
     xaxis2<-1:(numbW+ny-1)
     xaxis1names<-paste("W",xaxis1,sep="")
-    parameternames<-paste("X",1:nx,sep="")
-    yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
+    yaxis1<-seq(-round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3))
     cols1<-gray(seq(0.5,0.6,length=nx))
     cols3<-gray(seq(0.5,0.6,length=ny))
     cols2<-gray(seq(0.85,0.95,length=ny))
@@ -463,7 +445,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       points(xaxis1,optmatrix[,i],pch=NA)
       lines(xaxis1,optmatrix[,i],lty=i,col=cols3[i])
     }
-    legend("topright",names(data)[1:nx],lty=1:nx,bty="n",lwd=1)
+    legend("topright",dimnames(out$Parameters)[[2]],lty=1:nx,bty="n",lwd=1)
   
     
     
@@ -519,7 +501,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       }
       for(i in 1:ny)
       {
-        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols3[i],cex=0.6,line=1.2)
+        mtext(c(round(0.25*max(reoptmatrix[,i]),digits=2),round(0.625*max(reoptmatrix[,i]),digits=2),round(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols3[i],cex=0.6,line=1.2)
       }
     }
     if(standard==FALSE)
@@ -532,7 +514,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       }
       for(i in 1:ny)
       {
-        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols3[i],cex=0.6,line=1.2)
+        mtext(c(round(0.25*max(reoptmatrix[,i]),digits=2),round(0.625*max(reoptmatrix[,i]),digits=2),round(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols3[i],cex=0.6,line=1.2)
       }    
     }
     ######################
@@ -568,7 +550,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
           point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
           point2<-c(axis4[i],axis4[i])
           lines(point1,point2,col=cols3[i],lty=i)
-          mtext(signif(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols3[i],cex=0.6,line=1.2)
+          mtext(round(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols3[i],cex=0.6,line=1.2)
         }
       }
     }  
@@ -577,7 +559,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     ####### End: Target Values #######
     ##################################
     
-    nam<-names(data)[(nx+1):(nx+ny)]
+    nam<-dimnames(out$Responses)[[2]]
     for(i in 1:length(nam))
     {
       nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=") 
@@ -619,19 +601,14 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       ##  out is output of 'JOP'
   
     ## Warning Messages:
-    if(is.null(data))
-    {
-      return("data set is required!")
-    }
     if(is.null(out))
     {
-      return("Run 'JOP' first! 'oplot' needs output of 'JOP'!")
+      return("Run 'JOP' first! 'locate' needs output of 'JOP'!")
     }
     ## Setting Values
     nx<-dim(out$Parameters)[2]
     ny<-dim(out$Responses)[2]
     numbW<-dim(out$Responses)[1]
-    xdesign<-data[,1:nx]
     optmatrix<-out[[1]]
     reoptmatrix<-out[[2]]
     deviation<-out[[3]]
@@ -641,8 +618,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     xaxis1<-1:numbW
     xaxis2<-1:(numbW+ny-1)
     xaxis1names<-paste("W",xaxis1,sep="")
-    parameternames<-paste("X",1:nx,sep="")
-    yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
+    yaxis1<-seq(-round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3))
   
     # left plot
     par(fig=c(0,0.45,0.15,0.85),new=TRUE,lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
@@ -667,7 +643,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     {
       points(xlp[i],optp[i],col="black",cex=3)
     }
-    legend("topright",names(data)[1:nx],lty=1:nx,col=cols3,bty="n",lwd=1)
+    legend("topright",dimnames(out$Parameters)[[2]],lty=1:nx,col=cols3,bty="n",lwd=1)
   
   
     # right Plot
@@ -723,7 +699,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       }
       for(i in 1:ny)
       {
-        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols3[i],cex=0.6,line=1.2)
+        mtext(c(round(0.25*max(reoptmatrix[,i]),digits=2),round(0.625*max(reoptmatrix[,i]),digits=2),round(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols3[i],cex=0.6,line=1.2)
       }
     }
     if(standard==FALSE)
@@ -736,7 +712,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
       }
       for(i in 1:ny)
       {
-        mtext(c(signif(0.25*max(reoptmatrix[,i]),digits=2),signif(0.625*max(reoptmatrix[,i]),digits=2),signif(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols3[i],cex=0.6,line=1.2)
+        mtext(c(round(0.25*max(reoptmatrix[,i]),digits=2),round(0.625*max(reoptmatrix[,i]),digits=2),round(max(reoptmatrix[,i]),digits=2)),side=2,at=c(0.25-(ny-1)*0.035+(i-1)*0.065,0.625-(ny-1)*0.035+(i-1)*0.065,1-(ny-1)*0.045+(i-1)*0.065),col=cols3[i],cex=0.6,line=1.2)
       }    
     }
       ######################
@@ -772,7 +748,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
             point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
             point2<-c(axis4[i],axis4[i])
             lines(point1,point2,col=cols3[i],lty=i)
-            mtext(signif(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols3[i],cex=0.6,line=1.2)
+            mtext(round(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.065,col=cols3[i],cex=0.6,line=1.2)
           }
         }
       }  
@@ -788,7 +764,7 @@ function(data,out,xlu=NaN,no.col=FALSE,standard=TRUE)
     yloc1<-c(0,1.25)
     points(xloc1,yloc1,pch=NaN)
     lines(xloc1,yloc1,lwd=2,lty="solid")
-    nam<-names(data)[(nx+1):(nx+ny)]
+    nam<-dimnames(out$Responses)[[2]]
     for(i in 1:length(nam))
     {
       nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=")
