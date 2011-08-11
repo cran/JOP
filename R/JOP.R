@@ -912,13 +912,13 @@ crformD<-function(x)
     dimnames(optval)<-list(xaxis1names,c(""))
     if(shifter==1)
     {
-      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,outmod,optmatrix[xlu,],reoptmatrix[xlu,],diagA)
-      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","DGLM","RiskminimalParameters", "RiskminimalResponses","diagA") 
+      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,outmod,optmatrix[xlu,],reoptmatrix[xlu,],diagA,c(Wstart,Wend))
+      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","DGLM","RiskminimalParameters", "RiskminimalResponses","diagA","ValW") 
     }
     else
     {
-      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,optmatrix[xlu,],reoptmatrix[xlu,],diagA)
-      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","RiskminimalParameters", "RiskminimalResponses","diagA") 
+      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,optmatrix[xlu,],reoptmatrix[xlu,],diagA,c(Wstart,Wend))
+      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","RiskminimalParameters", "RiskminimalResponses","diagA","ValW") 
     }
 
     

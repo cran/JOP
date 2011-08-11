@@ -2,7 +2,9 @@
 
 oplot <-
 function(out,no.col=FALSE,standard=TRUE)
-{
+{  
+  Wstart<-out$ValW[1]
+  Wend<-out$ValW[2]
   ##  out is output of 'JOP'
   if(no.col==FALSE)
   {
@@ -34,9 +36,9 @@ function(out,no.col=FALSE,standard=TRUE)
   
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,optmatrix[,1],xlab="Stretch Vector",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
-    axis(1,at=xaxis1,labels=xaxis1names)
+    axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend))
     axis(2,at=yaxis1)
     lines(xaxis1,optmatrix[,1])
     for(i in 2:nx)
@@ -58,9 +60,9 @@ function(out,no.col=FALSE,standard=TRUE)
     # right Plot
   
     par(fig=c(0.5,0.95,0.15,0.85),new=TRUE,bty="l",pty="s",las=1)
-    plot(xaxis1,reoptplot[,1],xlab="Weight Matrices",ylab="",ylim=c(0,1.25+max(devstand)),xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,reoptplot[,1],xlab="Stretch Vector",ylab="",ylim=c(0,1.25+max(devstand)),xaxt="n",yaxt="n",pch=NA)
     mtext("Predicted Response",side=3,at=1,cex=0.6)
-    axis(1,at=xaxis1,labels=xaxis1names)
+    axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend))
     axis(2,at=c(0.25,0.625,1),labels=c("","",""))
       #deviation
     if(standard==TRUE)
@@ -192,9 +194,9 @@ function(out,no.col=FALSE,standard=TRUE)
     
     # left plot
     par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Weight Matrices",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,optmatrix[,1],xlab="Stretch Vector",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
     mtext("Parameter Setting",side=3,at=1,cex=0.6)
-    axis(1,at=xaxis1,labels=xaxis1names)
+    axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend))
     axis(2,at=yaxis1)
     lines(xaxis1,optmatrix[,1],lty=1,col=cols3[1])        
     for(i in 2:nx)
@@ -220,9 +222,9 @@ function(out,no.col=FALSE,standard=TRUE)
 
   
     par(fig=c(0.5,0.95,0.15,0.85),new=TRUE,bty="l",pty="s",las=1)
-    plot(xaxis1,reoptplot[,1],xlab="Weight Matrices",ylab="",ylim=c(0,1.25+max(devstand)),xaxt="n",yaxt="n",pch=NA)
+    plot(xaxis1,reoptplot[,1],xlab="Stretch Vector",ylab="",ylim=c(0,1.25+max(devstand)),xaxt="n",yaxt="n",pch=NA)
     mtext("Predicted Response",side=3,at=1,cex=0.6)
-    axis(1,at=xaxis1,labels=xaxis1names)
+    axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend))
     axis(2,at=c(0.25,0.625,1),labels=c("","",""))
 
     
