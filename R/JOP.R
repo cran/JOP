@@ -131,8 +131,8 @@ crformD<-function(x)
        ###############################################
        ###############################################
     
-  JOP<-function(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),optreg=0,tau=NULL,interact=0,
-                quad=0,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
+  JOP<-function(nx=2,ny=1,Wstart=-5,Wend=5,numbW=20,d=c(1,0),optreg=0,tau=NULL,interact=1,
+                quad=1,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
   {
   ## solver=0:           nlminb
   ## solver=1:           rgenoud
@@ -494,7 +494,7 @@ crformD<-function(x)
         cat("\n")
         deviation<-matrix(NaN,ncol=ny,nrow=numbW)
         optval<-NULL
-    
+        pb <- txtProgressBar(min = 0, max = numbW, style = 3)
         for(i in 1:numbW)
         {
           riscfun<-function(x)
@@ -508,9 +508,6 @@ crformD<-function(x)
             }
             return(sum(diag(W[[i]]%*%diag(varval)))+sum(t(meanval-tau)%*%W[[i]]%*%(meanval-tau)))  
           }
-          #Optimization is conducted on a sphere
-      
-          # User can choose a solver
           if(solver==0)
           { 
             opt1<-nlminb(c(max(xdesign)/2,rep(-pi/2,nx-1)),riscfun,lower=lower,upper=upper)
@@ -538,7 +535,6 @@ crformD<-function(x)
           { 
             opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2,control=list(trace=0))
             optval[i]<-opt$values[length(opt$values)]
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-trafopar(opt$pars)
             for(k in 1:ny)
             {
@@ -551,7 +547,6 @@ crformD<-function(x)
             opt<-genoud(riscfun,nvars=nx,Domains=Domain, print.level=0,
                      boundary.enforcement=2,wait.generations=50)
             optval[i]<-opt$value
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-trafopar(opt$par)
             for(k in 1:ny)
             {
@@ -559,8 +554,9 @@ crformD<-function(x)
               deviation[i,k]<-as.numeric(varmd(trafopar(opt$par),k))
             }
           }
-                                                       
+        setTxtProgressBar(pb, i)                                               
         }
+        close(pb)
       }
       if(optreg==1)
       {
@@ -576,7 +572,7 @@ crformD<-function(x)
         cat("\n")
         deviation<-matrix(NaN,ncol=ny,nrow=numbW)
         optval<-NULL
-    
+        pb <- txtProgressBar(min = 0, max = numbW, style = 3)
         for(i in 1:numbW)
         {
           riscfun<-function(x)
@@ -590,9 +586,6 @@ crformD<-function(x)
             }
             return(sum(diag(W[[i]]%*%diag(varval)))+sum(t(meanval-tau)%*%W[[i]]%*%(meanval-tau)))  
           }
-          #Optimization is conducted on a sphere
-      
-          # User can choose a solver
           if(solver==0)
           { 
             opt1<-nlminb(rep(max(xdesign)/2,nx),riscfun,lower=lower,upper=upper)
@@ -608,7 +601,6 @@ crformD<-function(x)
               opt<-opt3
             }
             optval[i]<-opt$objective
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-opt$par
             for(k in 1:ny)
             {
@@ -620,7 +612,6 @@ crformD<-function(x)
           { 
             opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2,control=list(trace=0))
             optval[i]<-opt$values[length(opt$values)]
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-opt$pars
             for(k in 1:ny)
             {
@@ -633,7 +624,6 @@ crformD<-function(x)
             opt<-genoud(riscfun,nvars=nx,Domains=Domain, print.level=0,
                      boundary.enforcement=2,wait.generations=50)
             optval[i]<-opt$value
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-opt$par
             for(k in 1:ny)
             {
@@ -641,8 +631,9 @@ crformD<-function(x)
               deviation[i,k]<-as.numeric(varmd(opt$par,k))
             }
           }
-                                                       
+          setTxtProgressBar(pb, i)                                             
         }
+      close(pb)
       }
     }
     else
@@ -652,7 +643,7 @@ crformD<-function(x)
           return("mean.model and var.model have to be of type 'list'!")
         }
   
-             ##################################
+         ##################################
          ##################################
          #### Weight Matrices and     #####
          #### Standardization Matrix  #####
@@ -746,9 +737,6 @@ crformD<-function(x)
             }
             return(sum(diag(W[[i]]%*%diag(varval)))+sum(t(meanval-tau)%*%W[[i]]%*%(meanval-tau)))  
           }
-          #Optimization is conducted on a sphere
-      
-          # User can choose a solver
           if(solver==0)
           { 
             opt1<-nlminb(c(max(xdesign)/2,rep(-pi/2,nx-1)),riscfun,lower=lower,upper=upper)
@@ -764,7 +752,6 @@ crformD<-function(x)
               opt<-opt3
             }
             optval[i]<-opt$objective
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-trafopar(opt$par)
             for(k in 1:ny)
             {
@@ -776,7 +763,6 @@ crformD<-function(x)
           { 
             opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2,control=list(trace=0))
             optval[i]<-opt$values[length(opt$values)]
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-trafopar(opt$pars)
             for(k in 1:ny)
             {
@@ -789,7 +775,6 @@ crformD<-function(x)
             opt<-genoud(riscfun,nvars=nx,Domains=Domain, print.level=0,
                      boundary.enforcement=2,wait.generations=50)
             optval[i]<-opt$value
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-trafopar(opt$par)
             for(k in 1:ny)
             {
@@ -830,7 +815,6 @@ crformD<-function(x)
           }
 
       
-          # User can choose a solver
           if(solver==0)
           { 
             opt1<-nlminb(rep(max(xdesign)/2,nx),riscfun,lower=lower,upper=upper)
@@ -846,7 +830,6 @@ crformD<-function(x)
               opt<-opt3
             }
             optval[i]<-opt$objective
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-opt$par
             for(k in 1:ny)
             {
@@ -858,7 +841,6 @@ crformD<-function(x)
           { 
             opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,n.restarts=2,control=list(trace=0))
             optval[i]<-opt$values[length(opt$values)]
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-opt$pars
             for(k in 1:ny)
             {
@@ -871,7 +853,6 @@ crformD<-function(x)
             opt<-genoud(riscfun,nvars=nx,Domains=Domain, print.level=0,
                      boundary.enforcement=2,wait.generations=50)
             optval[i]<-opt$value
-            # The results are stored in optmatrix, reoptmatrix and deviation
             optmatrix[i,]<-opt$par
             for(k in 1:ny)
             {
@@ -899,10 +880,7 @@ crformD<-function(x)
     }
     xlu<-which(sirisknorm==min(sirisknorm))[1]
     xaxis1<-1:numbW
-    xaxis2<-1:(numbW+ny-1)
     xaxis1names<-paste("W",xaxis1,sep="")
-    parameternames<-paste("X",1:nx,sep="")
-    yaxis1<-seq(-signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3),signif(max(abs(optmatrix)),digits=3))
   
 
     dimnames(optmatrix)<-list(xaxis1names,names(data)[1:nx])

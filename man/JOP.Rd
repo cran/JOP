@@ -18,8 +18,8 @@ produced by \code{JOP} and conducts the visualization without optimization. Furt
 the corresponding design parameters. 
 }
 \usage{
-JOP(nx=2,ny=1,Wstart=1,Wend=1,numbW=1,d=c(1,0),optreg=0,tau=NULL,interact=0,
-quad=0,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
+JOP(nx=2,ny=1,Wstart=-5,Wend=5,numbW=20,d=c(1,0),optreg=0,tau=NULL,interact=1,
+quad=1,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
 oplot(out,no.col=FALSE,standard=TRUE)
 JOPexampledata()
 JOPexample(solver=0,optreg=0,no.col=TRUE)

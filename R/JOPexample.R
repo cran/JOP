@@ -28,10 +28,10 @@ tau<-c(0,0.05)
 
 
 # Set the Values for the Weight Matrices
-Wstart<--9.21
-numbW<-11
+Wstart<--5
+numbW<-20
 d<-c(1,0)
-Wend<-9.21
+Wend<-5
 
 # JOP calculates the optimal design parameters and the appropriate predicted responses.
 # Furthermore it produces the joint optimization plot
