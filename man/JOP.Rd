@@ -19,10 +19,10 @@ the corresponding design parameters.
 }
 \usage{
 JOP(nx=2,ny=1,Wstart=-5,Wend=5,numbW=20,d=c(1,0),optreg=0,tau=NULL,interact=1,
-quad=1,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
+quad=1,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0)
 oplot(out,no.col=FALSE,standard=TRUE)
 JOPexampledata()
-JOPexample(solver=0,optreg=0,no.col=TRUE)
+JOPexample(solver=0,optreg=0)
 locate(out,xlu=NaN,no.col=FALSE,standard=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -133,6 +133,10 @@ JOP returns a list containing the following elements:
 \item{OptimalValue}{This vector contains the optimal value of the risk function for each optimal parameter setting}
 \item{TargetValue}{Contains the target values for the correspoding responses}
 \item{DGLM}{If no models assigned then the list DGLM contains the calculated models for the mean and dispersion for every response}
+\item{RiskminimalParameters}{Parameters that minimize the squared sum of single risks among all calculated Parameters}
+\item{RiskminimalResponses}{Responses for the risk minimal parameters}
+\item{diagA}{Diagonal values of the standardization matrix}
+\item{ValW}{Values for Wstart and Wend}
 }
 \details{Let \eqn{Y=(Y_1,\ldots,Y_p)}{Y=(Y_1,...,Y_p)} denote a vector of responses, \eqn{\tau=(\tau_1,\ldots,\tau_p)}{
 tau=(tau_1,...,tau_p)} a vector of target values and \eqn{x=(x_1,\ldots,x_k)}{x=x_1,...,x_k} a vector of design parameters. 

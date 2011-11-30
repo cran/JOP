@@ -18,8 +18,8 @@ optimization plot introduced by Kuhnt and Erdbruegge (2004).
 \tabular{ll}{
 Package: \tab JOP\cr
 Type: \tab Package\cr
-Version: \tab 2.1.0\cr
-Date: \tab 2011-09-16\cr
+Version: \tab 2.1.1\cr
+Date: \tab 2011-11-30\cr
 License: \tab GPL version 2 or newer\cr
 }
 }

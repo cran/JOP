@@ -17,34 +17,5 @@ dataset<-as.data.frame(t(matrix(c(1.00,1.00,7.9966,0.067,1.00,1.00,20.3601,0.083
 0.00,-1.41,42.3516,0.033), nrow=4)))
 dimnames(dataset)[[2]] <- c("X1", "X2","Y1","Y2")
 
-
-# Evaluating Funtions for Modelling the Mean and Dispersion for both the Responses:
-mean1<-function(x)
-{
-  return(26.73-11.56*x[2]+3.34*x[1]+1.9*x[1]*x[2])
-}
-mean2<-function(x)
-{
-  return(0.0636+0.0104*x[2]+0.0017*x[1]-0.0033*x[2]^2+0.004*x[1]*x[2])
-}
-var1<-function(x)
-{
-  return(21.2-3.34*x[1]+8.8*x[2]+0.41*x[1]^2+1.53*x[2]^2-1.17*x[1]*x[2])
-}
-var2<-function(x)
-{
-  return(4.05*10^(-5)+1.83*10^(-6)*x[2]+8.97*10^(-6)*x[2]^2)
-}
-
-# Put the Evaluating functions in a list:
-meanmodel<-list(mean1,mean2)
-varmodel<-list(var1,var2)
-names(meanmodel)<-list("MeanArea","MeanRBT")
-names(varmodel)<-list("VarianceArea","VarianceRBT")
-out<-vector("list",3)
-out[[1]]<-dataset
-out[[2]]<-meanmodel
-out[[3]]<-varmodel
-names(out)<-list("DataSet","MeanModels","VarianceModels")
-return(out)
+return(dataset)
 }

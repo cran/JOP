@@ -132,7 +132,7 @@ crformD<-function(x)
        ###############################################
     
   JOP<-function(nx=2,ny=1,Wstart=-5,Wend=5,numbW=20,d=c(1,0),optreg=0,tau=NULL,interact=1,
-                quad=1,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0,no.col=FALSE,standard=TRUE)
+                quad=1,main.disp=0,interact.disp=0,quad.disp=0,data=NULL,mean.model=NULL,var.model=NULL,solver=0)
   {
   ## solver=0:           nlminb
   ## solver=1:           rgenoud
@@ -723,7 +723,7 @@ crformD<-function(x)
         cat("\n")
         deviation<-matrix(NaN,ncol=ny,nrow=numbW)
         optval<-NULL
-    
+        pb <- txtProgressBar(min = 0, max = numbW, style = 3)
         for(i in 1:numbW)
         {
           riscfun<-function(x)
@@ -782,8 +782,9 @@ crformD<-function(x)
               deviation[i,k]<-as.numeric(var.model[[k]](trafopar(opt$par)))
             }
           }
-                                                       
+          setTxtProgressBar(pb, i)                                             
         }
+      close(pb)
       }
       if(optreg==1)
       {
@@ -799,7 +800,7 @@ crformD<-function(x)
         cat("\n")
         deviation<-matrix(NaN,ncol=ny,nrow=numbW)
         optval<-NULL
-    
+        pb <- txtProgressBar(min = 0, max = numbW, style = 3)
         for(i in 1:numbW)
         {
           riscfun<-function(x)
@@ -860,8 +861,9 @@ crformD<-function(x)
               deviation[i,k]<-as.numeric(var.model[[k]](opt$par))
             }
           }
-                                                       
+          setTxtProgressBar(pb, i)                                             
         }
+      close(pb)
       }
     }
     variance<-deviation
@@ -890,13 +892,13 @@ crformD<-function(x)
     dimnames(optval)<-list(xaxis1names,c(""))
     if(shifter==1)
     {
-      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,outmod,optmatrix[xlu,],reoptmatrix[xlu,],diagA,c(Wstart,Wend))
-      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","DGLM","RiskminimalParameters", "RiskminimalResponses","diagA","ValW") 
+      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,outmod,optmatrix[xlu,],reoptmatrix[xlu,],c(Wstart,Wend),d,numbW)
+      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","DGLM","RiskminimalParameters", "RiskminimalResponses","ValW","d","numbW") 
     }
     else
     {
-      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,optmatrix[xlu,],reoptmatrix[xlu,],diagA,c(Wstart,Wend))
-      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","RiskminimalParameters", "RiskminimalResponses","diagA","ValW") 
+      optimres<-list(optmatrix,reoptmatrix,deviation,optval,tau,optmatrix[xlu,],reoptmatrix[xlu,],c(Wstart,Wend),d,numbW)
+      names(optimres)<-list("Parameters","Responses","StandardDeviation","OptimalValue","TargetValue","RiskminimalParameters", "RiskminimalResponses","ValW","d","numbW") 
     }
 
     
@@ -906,28 +908,7 @@ crformD<-function(x)
     #################################
     #################################
     
-    if(no.col==FALSE)
-    {
-      if(standard==FALSE)
-      {
-        oplot(optimres,no.col=FALSE,standard=FALSE)
-      }
-      else
-      {
-        oplot(optimres,no.col=FALSE,standard=TRUE)      
-      }
-    }
-    else
-    {
-      if(standard==FALSE)
-      {
-        oplot(optimres,no.col=TRUE,standard=FALSE)
-      }
-      else
-      {
-        oplot(optimres,no.col=TRUE,standard=TRUE)      
-      }
-    }
+    oplot(optimres)
     return(optimres)
 }
       
