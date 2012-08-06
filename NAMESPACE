@@ -1,1 +1,4 @@
-export(JOP,oplot,JOPexample,JOPexampledata,locate)
+export(JOP,locate)
+S3method(plot, JOP)
+
+

@@ -1,14 +1,57 @@
-.packageName<-'locate'
+    ########################################################
+    ####### Function that counts zeros after comma   #######
+    ########################################################
+    countdig<-function(x)
+    {
+      count<-0
+      if(abs(x)<1e-8){
+      return(0)}
+      while(abs(x)<1)
+      {
+        x<-x*10
+        count<-count+1
+      }
+      return(count)
+    }
+    ########################################################
+    ####### Function checks if two numbers are equal #######
+    ########################################################
+    numeq<-function(x,y)
+    {
+      count<-0
+      if(abs(x)<1e-8){
+      return(abs(x-y)<1e-3)}
+      x1<-x
+      while(abs(x1)<1)
+      {
+        x1<-x1*10
+        count<-count+1
+      }
+      tol<-1e-3*as.double(paste("1e-",count,sep=""))
+      return(abs(x-y)<tol)
+    }
+
+
+#######################
+#######################
 
 locate <-
-function(out,xlu=NaN,no.col=FALSE,standard=TRUE)
+function(x,xlu=NaN,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",pty="s",las=1,adj=0.5,cex=1,cex.lab=0.8,cex.axis=0.8,xlab=c("Stretch Vector","Stretch Vector"),ylab=c("Parameter Setting","Predicted Response"),...)
 {  
-  Wstart<-out$ValW[1]
-  Wend<-out$ValW[2]  
-  numbW<-dim(out$Responses)[1]
-  ##  out is output of 'JOP'
-  if(no.col==FALSE)
-  {
+    ## Setting Values
+    out<-x
+    Wstart<-out$ValW[1]
+    Wend<-out$ValW[2]  
+    numbW<-dim(out$Responses)[1]
+    nx<-dim(out$Parameters)[2]
+    ny<-dim(out$Responses)[2]
+    numbW<-dim(out$Responses)[1]
+    optmatrix<-out[[1]]
+    reoptmatrix<-out[[2]]
+    deviation<-out[[3]]
+    tau<-out[[5]]  
+    tau1<-out[[6]] 
+  
     if(!is.nan(xlu))
     {
       if(xlu<1 || xlu>numbW)
@@ -18,23 +61,15 @@ function(out,xlu=NaN,no.col=FALSE,standard=TRUE)
         return("Call locate again!")
       }
     }
-    else
+    if(is.nan(xlu))
     {
       cat("Choose your preferred point on the right plot please!\n")
       cat("\n")
       flush.console()
     }
-
-    oplot(out,no.col,standard) 
   
-    ## Setting Values
-    nx<-dim(out$Parameters)[2]
-    ny<-dim(out$Responses)[2]
-    numbW<-dim(out$Responses)[1]
-    optmatrix<-out[[1]]
-    reoptmatrix<-out[[2]]
-    deviation<-out[[3]]
-    tau<-out[[5]]  
+  
+    plot(out,no.col,standard,col,lty,bty,pty,las,adj,cex,cex.lab,cex.axis,xlab,ylab,...) 
   
 
     ####
@@ -47,7 +82,7 @@ function(out,xlu=NaN,no.col=FALSE,standard=TRUE)
       locp<-locator(n=1)
       xloc1<-round(c(locp$x,locp$x))  
     }
-    else
+    if(!is.nan(xlu))
     {
       xloc1<-c(xlu,xlu)  
     }
@@ -56,338 +91,151 @@ function(out,xlu=NaN,no.col=FALSE,standard=TRUE)
     xl<-xloc1[1]
     optp<-optmatrix[xl,]
     reoptp<-reoptmatrix[xl,]
-    cols<-1:(nx+ny+1)
-    if((nx+ny)>=7)
-    {
-      cols<-cols[-7]
-    }
-
-  
     ## Values to label the axes
     xaxis1<-1:numbW
-    xaxis2<-1:(numbW+ny-1)
-    yaxis1<-seq(-round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3))
-  
-    # left plot
-    par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Stretch Vector",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
-    mtext("Parameter Setting",side=3,at=1,cex=0.6)
-    axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend))
-    axis(2,at=yaxis1)
-    lines(xaxis1,optmatrix[,1])
-    for(i in 2:nx)
+    yaxis1<-seq(-round(max(abs(optmatrix)),digits=2+countdig(max(abs(optmatrix)))),round(max(abs(optmatrix)),digits=2+countdig(max(abs(optmatrix)))),round(max(abs(optmatrix)),digits=2+countdig(max(abs(optmatrix)))))
+  if(no.col==FALSE)
+  {
+    ## Setting Values
+    cols<-1:(nx+ny)
+    if((nx+ny)>=7)
     {
-      points(xaxis1,optmatrix[,i],col=cols[i],pch=NA)
-      lines(xaxis1,optmatrix[,i],col=cols[i])
+      cols<-1:(nx+ny+1)
+      cols<-cols[-7]
     }
-  
-  
-    yloc1<-c(-max(abs(optmatrix)),max(abs(optmatrix)))
-    points(xloc1,yloc1,pch=NaN)
-    lines(xloc1,yloc1,lwd=2,lty="solid")
-    xlp<-rep(xloc1,nx)
-    xlr<-rep(xloc1,ny)
+    ltys<-rep(1,nx+ny)
+  }
+  if(no.col==TRUE)
+  {
+    col1<-gray(seq(0.2,0.5,length=nx))
+    col2<-gray(seq(0.2,0.5,length=ny))
+    cols<-c(col1,col2)
+    ltys<-c(1:nx,1:ny)
+  }
+  if(no.col!=TRUE && no.col!=FALSE)
+  {
+    return(cat("no.col has to be logical!\n"))
+  }
+  if(length(col)==1)
+  col<-cols
+  if(length(lty)==1)
+  lty<-ltys
+  if(length(col)!=(nx+ny))
+  col<-cols
+  if(length(lty)!=(nx+ny))
+  lty<-ltys
+
+    optplot<-matrix(NaN,ncol=nx,nrow=numbW)
     for(i in 1:nx)
     {
-      points(xlp[i],optp[i],col=cols[i],cex=3)
-    }
-    legend("topright",dimnames(out$Parameters)[[2]][1:nx],col=cols[1:nx],bty="n",lwd=1)
-  
-  
-    reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
-    devstand<-matrix(NaN,ncol=ny,nrow=numbW)
-    for(i in 1:ny)
-    {
+      optplot[,i]<-optmatrix[,i]-min(optmatrix[,i])
       for(j in 1:numbW)
-      {
-        reoptplot[j,i]<-ifelse(tau[i]>max(reoptmatrix[,i]),reoptmatrix[j,i]/tau[i],reoptmatrix[j,i]/max(reoptmatrix[,i]))
-      }
-      devstand[,i]<-deviation[,i]/max(reoptmatrix[,i])
+      { 
+        optplot[j,i]<-optplot[j,i]/(max(optmatrix[,i])-min(optmatrix[,i]))
+      }  
     }
-  
-  
-    # right Plot
-    axis4<-NULL
+    par(fig=c(0,0.45,0.15,0.85),new=TRUE,bty="l",pty="s",las=1,adj=adj,...)
+    matplot(xaxis1,optplot,type="l",col=col[1:(nx)],lty=lty[1:(nx)],xlab=xlab[1],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,...)
+    mtext(ylab[1],side=3,at=1,cex=cex.lab)
+    axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend),cex.axis=cex.axis)
+    axis(2,at=c(0,0.5,1),labels=c("","",""),cex.axis=cex.axis)   
+        
     for(i in 1:ny)
     {
-      axis4[i]<-ifelse(tau[i]>max(reoptmatrix[,i]),1,tau[i]/max(reoptmatrix[,i]))
+      mtext(c(round(min(optmatrix[,i]),digits=2+countdig(min(optmatrix[,i]))),round(0.5*(max(optmatrix[,i])+min(optmatrix[,i])),digits=2+countdig(0.5*(max(optmatrix[,i])+min(optmatrix[,i])))),round(max(optmatrix[,i]),digits=2+countdig(max(optmatrix[,i])))),side=2,at=c(0-(i-1)*(cex.axis*3/4)*1.25/26,0.5-(i-1)*(cex.axis*3/4)*1.25/26,1-(i-1)*(cex.axis*3/4)*1.25/26),col=col[i],cex=cex.axis,line=1.2)
     }
-    par(fig=c(0.5,0.95,0.15,0.85),new=TRUE,bty="l",pty="s",las=1)
-    plot(xaxis1,reoptplot[,1],xlab="Stretch Vector",ylab="",ylim=c(0.8*min(reoptplot,axis4),1.05+max(devstand)),xaxt="n",yaxt="n",pch=NA)
-    mtext("Predicted Response",side=3,at=1,cex=0.6)
-    axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend))
-    axis(2,at=c(0.8*min(reoptplot,axis4),0.9*(min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4))),1),labels=c("","",""))
+
+    yloc1<-c(-max(abs(optmatrix)),max(abs(optmatrix)))
+    abline(v=xl,lty="solid")
+    xlp<-rep(xloc1,nx)
+    xlr<-rep(xloc1,ny)
+    matpoints(rep(xl,nx),optplot[xl,],col=cols[1:nx],cex=cex,pch=1)
+    legend("topright",dimnames(out$Parameters)[[2]][1:nx],col=col[1:nx],lty=lty[1:nx],bty="n",cex=cex.lab)
+ 
+  
+    # right Plot  
+      
+    ##### First step to get every response on the same scale:
+    targetvaluespos<-NULL
+    reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
+    reoptplusdev<-matrix(NaN,ncol=ny,nrow=numbW)
+    reoptminusdev<-matrix(NaN,ncol=ny,nrow=numbW)
+    devstand<-matrix(NaN,ncol=ny,nrow=numbW)
+      
       #deviation
     if(standard==TRUE)
     {
-      for(j in 1:ny)
-      {
-        point11<-NULL
-        point12<-NULL
-        point21<-NULL
-        point22<-NULL
-        for(i in 1:numbW)
-        {
-          point11[i]<-i
-          point21[i]<-numbW-i+1
-          point22[i]<-reoptplot[numbW-i+1,j]+devstand[numbW-i+1,j]
-          point12[i]<-reoptplot[i,j]-devstand[i,j]
-        }
-        point1<-c(point11,point21)
-        point2<-c(point12,point22)
-        polygon(point1,point2,col=cols[nx+j],border=FALSE)
-      }    
-
-    
-      lines(xaxis1,reoptplot[,1],col="black")                           
-      for(i in 2:ny)
-      {
-        lines(xaxis1,reoptplot[,i],col="black")
-      }
       for(i in 1:ny)
       {
-         mtext(c(round(0.8*min(reoptplot,axis4)*max(reoptmatrix[,i]),digits=2),round(0.9*((min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4))))*max(reoptmatrix[,i],tau[i]),digits=2),round(max(reoptmatrix[,i],tau[i]),digits=2)),side=2,at=c(0.8*min(reoptplot,axis4)-(ny-1)*0.025+(i-1)*0.025,0.9*(min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4)))-(ny-1)*0.025+(i-1)*0.025,1-(ny-1)*0.025+(i-1)*0.025),col=cols[nx+i],cex=0.6,line=1.2)
+        reoptplot[,i]<-reoptmatrix[,i]-min(reoptmatrix[,i]-deviation[,i],tau[i])
+        reoptplusdev[,i]<-reoptmatrix[,i]+deviation[,i]-min(reoptmatrix[,i]-deviation[,i],tau[i])
+        reoptminusdev[,i]<-reoptmatrix[,i]-deviation[,i]-min(reoptmatrix[,i]-deviation[,i],tau[i])
+        targetvaluespos[i]<-ifelse(numeq(tau[i],min(reoptmatrix[,i]))==TRUE&&numeq(tau[i],max(reoptmatrix[,i]))==TRUE,0.5,ifelse(tau[i]>max(reoptmatrix[,i]+deviation[,i]),1,(tau[i]-min(c(reoptmatrix[,i]-deviation[,i],tau[i])))/(max(reoptmatrix[,i]+deviation[,i])-min(c(reoptmatrix[,i]-deviation[,i],tau[i])))))
+        for(j in 1:numbW)
+        { 
+          reoptplot[j,i]<-ifelse(numeq(tau[i],min(reoptmatrix[,i]))==TRUE&&numeq(tau[i],max(reoptmatrix[,i]))==TRUE,0.5,ifelse(tau[i]>max(reoptmatrix[,i]+deviation[,i]),reoptplot[j,i]/(tau[i]-min(reoptmatrix[,i]-deviation[,i])),reoptplot[j,i]/(max(reoptmatrix[,i]+deviation[,i])-min(reoptmatrix[,i]-deviation[,i],tau[i]))))
+          reoptplusdev[j,i]<-ifelse(numeq(tau[i],min(reoptmatrix[,i]))==TRUE&&numeq(tau[i],max(reoptmatrix[,i]))==TRUE,0.65,ifelse(tau[i]>max(reoptmatrix[,i]+deviation[,i]),reoptplusdev[j,i]/(tau[i]-min(reoptmatrix[,i]-deviation[,i])),reoptplusdev[j,i]/(max(reoptmatrix[,i]+deviation[,i])-min(reoptmatrix[,i]-deviation[,i],tau[i]))))
+          reoptminusdev[j,i]<-ifelse(numeq(tau[i],min(reoptmatrix[,i]))==TRUE&&numeq(tau[i],max(reoptmatrix[,i]))==TRUE,0.35,ifelse(tau[i]>max(reoptmatrix[,i]+deviation[,i]),reoptminusdev[j,i]/(tau[i]-min(reoptmatrix[,i]-deviation[,i])),reoptminusdev[j,i]/(max(reoptmatrix[,i]+deviation[,i])-min(reoptmatrix[,i]-deviation[,i],tau[i]))))
+        }   
+      }
+      par(fig=c(0.5,0.95,0.15,0.85),new=TRUE,bty=bty,pty=pty,las=las)
+      matplot(xaxis1,reoptplot,type="l",col=col[(nx+1):(nx+ny)],lty=lty[(nx+1):(nx+ny)],xlab=xlab[2],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,...)
+      mtext(ylab[2],side=3,at=1,cex=cex.lab)
+      axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend),cex.axis=cex.axis)
+      axis(2,at=c(0,0.5,1),labels=c("","",""),cex.axis=cex.axis)   
+      for(j in 1:ny)
+      {
+        polygon(c(1:numbW,numbW:1,1),c(reoptminusdev[,j],reoptplusdev[length(reoptplusdev[,j]):1,j],reoptminusdev[1,j]),col=rgb(col2rgb(col[nx+j])[1]/255,col2rgb(col[nx+j])[2]/255,col2rgb(col[nx+j])[3]/255,alpha=0.1+j*0.2/ny),border=FALSE)
+      } 
+      for(i in 1:ny)
+      {
+        mtext(c(round(min(c(reoptmatrix[,i]-deviation[,i],tau[i])),digits=2+countdig(min(c(reoptmatrix[,i]-deviation[,i],tau[i])))),round((max(c(reoptmatrix[,i]+deviation[,i],tau[i]))+min(c(reoptmatrix[,i]-deviation[,i],tau[i])))*0.5,digits=2+countdig((max(c(reoptmatrix[,i]+deviation[,i],tau[i]))+min(c(reoptmatrix[,i]-deviation[,i],tau[i])))*0.5)),round(max(c(reoptmatrix[,i]+deviation[,i],tau[i])),digits=2+countdig(max(c(reoptmatrix[,i]+deviation[,i],tau[i]))))),side=2,at=c(0-(i-1)*(cex.axis*3/4)*1.25/26,0.5-(i-1)*(cex.axis*3/4)*1.25/26,1-(i-1)*(cex.axis*3/4)*1.25/26),col=col[nx+i],lty=lty[nx+i],cex=cex.axis,line=1.2)  
       } 
     }
     if(standard==FALSE)
     {
-      lines(xaxis1,reoptplot[,1],col=cols[nx+1])                            
-      for(i in 2:ny)
-      {
-        lines(xaxis1,reoptplot[,i],col=cols[nx+i])
-      }
       for(i in 1:ny)
       {
-         mtext(c(round(0.8*min(reoptplot,axis4)*max(reoptmatrix[,i]),digits=2),round(0.9*((min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4))))*max(reoptmatrix[,i],tau[i]),digits=2),round(max(reoptmatrix[,i],tau[i]),digits=2)),side=2,at=c(0.8*min(reoptplot,axis4)-(ny-1)*0.025+(i-1)*0.025,0.9*(min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4)))-(ny-1)*0.025+(i-1)*0.025,1-(ny-1)*0.025+(i-1)*0.025),col=cols[nx+i],cex=0.6,line=1.2)
-      }    
-    }
-      ######################
-      ### Target Values ####
-      ######################
-      
-      zaehler<-vector("list",length(tau))
-      for(i in 1:length(tau))
-      {
-      counter<-NULL
-      index<-1
-        for(j in 1:length(tau))
+        reoptplot[,i]<-reoptmatrix[,i]-min(reoptmatrix[,i],tau[i])
+        targetvaluespos[i]<-ifelse(numeq(tau[i],min(reoptmatrix[,i]))==TRUE&&numeq(tau[i],max(reoptmatrix[,i]))==TRUE,0.5,ifelse(tau[i]>max(reoptmatrix[,i]),1,(tau[i]-min(c(reoptmatrix[,i],tau[i])))/(max(reoptmatrix[,i])-min(c(reoptmatrix[,i],tau[i])))))
+        for(j in 1:numbW)
         { 
-          if(abs(axis4[i]-axis4[j])<0.001 && i!=j)
-          {
-            counter[index]<-j
-            index<-index+1
-          }
-        }
-        zaehler[[i]]<-sort(c(i,counter))
+          reoptplot[j,i]<-ifelse(numeq(tau[i],min(reoptmatrix[,i]))==TRUE&&numeq(tau[i],max(reoptmatrix[,i]))==TRUE,0.5,ifelse(tau[i]>max(reoptmatrix[,i]),reoptplot[j,i]/(tau[i]-min(reoptmatrix[,i])),reoptplot[j,i]/(max(reoptmatrix[,i])-min(reoptmatrix[,i],tau[i]))))
+        }  
       }
-      for(i in 1:length(tau))
+      par(fig=c(0.5,0.95,0.15,0.85),new=TRUE,bty=bty,pty=pty,las=las)
+      matplot(xaxis1,reoptplot,type="l",col=col[(nx+1):(nx+ny)],lty=lty[(nx+1):(nx+ny)],xlab=xlab[2],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,...)
+      mtext(ylab[2],side=3,at=1,cex=cex.lab)
+      axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend),cex.axis=cex.axis)
+      axis(2,at=c(0,0.5,1),labels=c("","",""),cex.axis=cex.axis)   
+        
+      for(i in 1:ny)
       {
-        point1<-NULL
-        point2<-NULL
-        for(j in 1:length(zaehler[[i]]))
+        if(numeq(tau[i],min(reoptmatrix[,i]))==TRUE&&numeq(tau[i],max(reoptmatrix[,i]))==TRUE)
         {
-          if(i==zaehler[[i]][j])
-          {
-            point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
-            point2<-c(axis4[i],axis4[i])
-            lines(point1,point2,col=cols[nx+i])
-            mtext(round(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.035,col=cols[nx+i],cex=0.6,line=1.2)
-          }
+          mtext(c(round(ifelse(numeq(tau[i],0)==TRUE,-0.5,tau[i]-0.5*tau[i])),ifelse(numeq(tau[i],0)==TRUE,0,tau[i]),ifelse(numeq(tau[i],0)==TRUE,0.5,tau[i]+0.5*tau[i])),side=2,at=c(0-(i-1)*(cex.axis*3/4)*1.25/26,0.5-(i-1)*(cex.axis*3/4)*1.25/26,1-(i-1)*(cex.axis*3/4)*1.25/26),col=col[nx+i],cex=cex.axis,line=1.2)  
         }
-      }  
-  
-      ##################################
-      ####### End: Target Values #######
-      ##################################
-    
-    yloc1<-c(0,1.25)
-    points(xloc1,yloc1,pch=NaN)
-    lines(xloc1,yloc1,lwd=2,lty="solid")
-    nam<-dimnames(out$Responses)[[2]]
-    for(i in 1:length(nam))
-    {
-      nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=")
-    }
-    for(i in 1:ny)
-    {
-      points(xlp[i],ifelse(tau[i]>max(reoptmatrix[,i]),reoptp[i]/tau[i],reoptp[i]/max(reoptmatrix[,i])),col="black",cex=3)#cols[nx+i],cex=3)
-    }
-    legend("topright",nam,col=cols[(nx+1):(nx+ny)],bty="n",lwd=1)
-  
-    opt<-list(optp,reoptp)
-  
-    names(opt)<-list("ChosenParameters","ChosenResponses")
-
-    return(opt)
-  }
-  else
-  {
-    if(!is.nan(xlu))
-    {
-      if(xlu<1 || xlu>numbW)
-      {
-        cat("Choose a x-coordinate between 1 and numbW")
-        cat("\n")
-        return("Call locate again!")
-      }
-    }
-    else
-    {
-      cat("Choose your preferred point on the right plot please!\n")
-      cat("\n")
-      flush.console()
-    }
-    
-    oplot(out,no.col,standard)
-
-    
-    ## Setting Values
-    nx<-dim(out$Parameters)[2]
-    ny<-dim(out$Responses)[2]
-    numbW<-dim(out$Responses)[1]
-    optmatrix<-out[[1]]
-    reoptmatrix<-out[[2]]
-    deviation<-out[[3]]
-    tau<-out[[5]]  
-    
-    ####
-    ####  Location of points
-    ####
-  
-    if(is.nan(xlu))
-    {
-      locp<-locator(n=1)
-      xloc1<-round(c(locp$x,locp$x))  
-    }
-    else
-    {
-      xloc1<-c(xlu,xlu)  
-    }
-      
-    ## Chosen Points:
-    xl<-xloc1[1]
-    optp<-optmatrix[xl,]
-    reoptp<-reoptmatrix[xl,]    
-  
-    ## Values to label the axes
-    xaxis1<-1:numbW
-    xaxis2<-1:(numbW+ny-1)
-    yaxis1<-seq(-round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3),round(max(abs(optmatrix)),digits=3))
-    cols1<-gray(seq(0.5,0.6,length=nx))
-    cols3<-gray(seq(0.5,0.6,length=ny))
-    cols2<-gray(seq(0.85,0.95,length=ny))
-    
-    # left plot
-    par(fig=c(0,0.45,0.15,0.85),lwd=1,lty=6,bty="l",pty="s",las=1,cex=0.6,adj=0.5)
-    plot(xaxis1,optmatrix[,1],xlab="Stretch Vector",ylim=c(-max(abs(optmatrix)),max(abs(optmatrix))+0.25*max(abs(optmatrix))),ylab="",xaxt="n",yaxt="n",pch=NA)
-    mtext("Parameter Setting",side=3,at=1,cex=0.6)
-    axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend))
-    axis(2,at=yaxis1)
-    lines(xaxis1,optmatrix[,1],lty=1,col=cols3[1])        
-    for(i in 2:nx)
-    {  
-      points(xaxis1,optmatrix[,i],pch=NA)
-      lines(xaxis1,optmatrix[,i],lty=i,col=cols1[i])
-    }
-  
-  
-    yloc1<-c(-max(abs(optmatrix)),max(abs(optmatrix)))
-    points(xloc1,yloc1,pch=NaN)
-    lines(xloc1,yloc1,lwd=2,lty=1)
-    xlp<-rep(xloc1,nx)
-    xlr<-rep(xloc1,ny)
-    for(i in 1:nx)
-    {
-      points(xlp[i],optp[i],col="black",cex=3)
-    }
-    legend("topright",dimnames(out$Parameters)[[2]],lty=1:nx,bty="n",lwd=1)
-  
-  
-    # right Plot
-    
-    reoptplot<-matrix(NaN,ncol=ny,nrow=numbW)
-    devstand<-matrix(NaN,ncol=ny,nrow=numbW)
-    for(i in 1:ny)
-    {
-      for(j in 1:numbW)
-      {
-        reoptplot[j,i]<-ifelse(tau[i]>max(reoptmatrix[,i]),reoptmatrix[j,i]/tau[i],reoptmatrix[j,i]/max(reoptmatrix[,i]))
-      }
-      devstand[,i]<-deviation[,i]/max(reoptmatrix[,i])
-    }
-
-  
-    axis4<-NULL
-    for(i in 1:ny)
-    {
-      axis4[i]<-ifelse(tau[i]>max(reoptmatrix[,i]),1,tau[i]/max(reoptmatrix[,i]))
-    }
-    par(fig=c(0.5,0.95,0.15,0.85),new=TRUE,bty="l",pty="s",las=1)
-    plot(xaxis1,reoptplot[,1],xlab="Stretch Vector",ylab="",ylim=c(0.8*min(reoptplot,axis4),1.05+max(devstand)),xaxt="n",yaxt="n",pch=NA)
-    mtext("Predicted Response",side=3,at=1,cex=0.6)
-    axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend))
-    axis(2,at=c(0.8*min(reoptplot,axis4),0.9*(min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4))),1),labels=c("","",""))
-
-    
-
-    #deviation
-    if(standard==TRUE)
-    {
-    for(j in 1:ny)
-    {
-      point11<-NULL
-      point12<-NULL
-      point21<-NULL
-      point22<-NULL
-      for(i in 1:numbW)
-      {
-        point11[i]<-i
-        point21[i]<-numbW-i+1
-        point22[i]<-reoptplot[numbW-i+1,j]+devstand[numbW-i+1,j]
-        point12[i]<-reoptplot[i,j]-devstand[i,j]
-      }
-      point1<-c(point11,point21)
-      point2<-c(point12,point22)
-      polygon(point1,point2,col=cols2[j],border=FALSE)
-      }
-          
-      lines(xaxis1,reoptplot[,1],lty=1,col=cols3[1])                           
-      for(i in 2:ny)
-      {
-        points(xaxis1,reoptplot[,i],pch=NA)
-        lines(xaxis1,reoptplot[,i],lty=i,col=cols3[i])
-      }
-      for(i in 1:ny)
-      {
-        mtext(c(round(0.8*min(reoptplot,axis4)*max(reoptmatrix[,i]),digits=2),round(0.9*((min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4))))*max(reoptmatrix[,i],tau[i]),digits=2),round(max(reoptmatrix[,i],tau[i]),digits=2)),side=2,at=c(0.8*min(reoptplot,axis4)-(ny-1)*0.025+(i-1)*0.025,0.9*(min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4)))-(ny-1)*0.025+(i-1)*0.025,1-(ny-1)*0.025+(i-1)*0.025),col=cols3[i],cex=0.6,line=1.2)
-      }
-    }
-    if(standard==FALSE)
-    {
-      lines(xaxis1,reoptplot[,1],col=cols3[1],lty=1)                            
-      for(i in 2:ny)
-      {
-        points(xaxis1,reoptplot[,i],pch=NA)
-        lines(xaxis1,reoptplot[,i],col=cols3[i],lty=i)
-      }
-      for(i in 1:ny)
-      {
-        mtext(c(round(0.8*min(reoptplot,axis4)*max(reoptmatrix[,i]),digits=2),round(0.9*((min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4))))*max(reoptmatrix[,i],tau[i]),digits=2),round(max(reoptmatrix[,i],tau[i]),digits=2)),side=2,at=c(0.8*min(reoptplot,axis4)-(ny-1)*0.025+(i-1)*0.025,0.9*(min(reoptplot,axis4)+0.5*(1-min(reoptplot,axis4)))-(ny-1)*0.025+(i-1)*0.025,1-(ny-1)*0.025+(i-1)*0.025),col=cols3[i],cex=0.6,line=1.2)
+        else
+        {
+          mtext(c(round(min(reoptmatrix[,i],tau[i]),digits=2+countdig(min(reoptmatrix[,i],tau[i]))),round(0.5*(max(reoptmatrix[,i],tau[i])+min(reoptmatrix[,i],tau[i])),digits=2+countdig(0.5*(max(reoptmatrix[,i],tau[i])+min(reoptmatrix[,i],tau[i])))),round(max(reoptmatrix[,i],tau[i]),digits=2+countdig(max(reoptmatrix[,i],tau[i])))),side=2,at=c(0-(i-1)*(cex.axis*3/4)*1.25/26,0.5-(i-1)*(cex.axis*3/4)*1.25/26,1-(i-1)*(cex.axis*3/4)*1.25/26),col=col[nx+i],cex=cex.axis,line=1.2)
+        }
       }    
     }
-    ######################
-    ### Target Values ####
-    ######################
+        ######################
+        ### Target Values ####
+        ######################
         
     zaehler<-vector("list",length(tau))
     for(i in 1:length(tau))
     {
-    counter<-NULL
+      counter<-NULL
+      index<-1
       for(j in 1:length(tau))
-      {
-        if(abs(axis4[i]-axis4[j])<0.001 && i!=j)
+      { 
+        if(numeq(targetvaluespos[i],targetvaluespos[j])==TRUE && i!=j)
         {
-          counter[i]<-j
+          counter[index]<-j
+          index<-index+1
         }
       }
       zaehler[[i]]<-sort(c(i,counter))
@@ -401,36 +249,36 @@ function(out,xlu=NaN,no.col=FALSE,standard=TRUE)
         if(i==zaehler[[i]][j])
         {
           point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
-          point2<-c(axis4[i],axis4[i])
-          lines(point1,point2,col=cols3[i],lty=i)
-          mtext(round(tau[i],digits=2),side=4,at=axis4[i]-(j-1)*0.035,col=cols3[i],cex=0.6,line=1.2)
+          point2<-c(targetvaluespos[i],targetvaluespos[i])
+          lines(point1,point2,col=col[nx+i],lty=lty[nx+i])
+          mtext(round(tau[i],digits=2+countdig(tau[i])),side=4,at=targetvaluespos[i]-(j-1)*(cex.axis*3/4)*1.25/26,col=col[nx+i],cex=cex.axis,line=1.2)
         }
       }
     }  
+    
+        ##################################
+        ####### End: Target Values #######
+        ##################################
 
-    ##################################
-    ####### End: Target Values #######
-    ##################################
+    
     yloc1<-c(0,1.25)
-    points(xloc1,yloc1,pch=NaN)
-    lines(xloc1,yloc1,lwd=2,lty="solid")
+    abline(v=xl,lty="solid")
     nam<-dimnames(out$Responses)[[2]]
     for(i in 1:length(nam))
     {
-      nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau[i],sep="=")
+      nam[i]<-paste(paste(paste(nam[i],";",sep=""),"target",sep=" "),tau1[i],sep="=")
     }
     for(i in 1:ny)
     {
-      points(xlp[i],ifelse(tau[i]>max(reoptmatrix[,i]),reoptp[i]/tau[i],reoptp[i]/max(reoptmatrix[,i])),col="black",cex=3)#cols[nx+i],cex=3)
+      points(xlp[i],reoptplot[xlp[i],i],col="black",cex=cex)#cols[nx+i],cex=3)
     }
-    legend("topright",nam,lty=1:ny,col=cols3,bty="n",lwd=1)
+    legend("topright",nam,col=col[(nx+1):(nx+ny)],lty=lty[(nx+1):(nx+ny)],bty="n",cex=cex.lab)
   
     opt<-list(optp,reoptp)
   
     names(opt)<-list("ChosenParameters","ChosenResponses")
 
     return(opt)
-    }
 }
 
 
