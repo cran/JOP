@@ -9,7 +9,7 @@ optimization plot introduced by Kuhnt and Erdbruegge (2004).
 }
 \usage{
 JOP(Wstart=-5,Wend=5,numbW=10,d=NULL,optreg="sphere",Domain=NULL,tau,datax,datay,form.mean=NULL,form.disp=NULL,
-family.mean=gaussian(),family.disp=Gamma(link="log"),mean.model=NULL,var.model=NULL,joplot=F)
+family.mean=gaussian(),dlink="log",mean.model=NULL,var.model=NULL,joplot=F,solver="solnp")
 }
 \arguments{
   \item{Wstart}{
@@ -56,9 +56,9 @@ family.mean=gaussian(),family.disp=Gamma(link="log"),mean.model=NULL,var.model=N
   \item{family.mean}{
   \code{\link{family}} for the mean
 }
-  \item{family.disp}{
-  \code{\link{family}} for the dispersion
-}
+  \item{dlink}{
+  \code{list of names of link functions for the dispersion models}
+  }
   \item{mean.model}{
   list of functions that model the mean for the corresponding response
 }
@@ -67,6 +67,10 @@ family.mean=gaussian(),family.disp=Gamma(link="log"),mean.model=NULL,var.model=N
 }
   \item{joplot}{ 
   logical, if TRUE then the joint optimization plot is displayed. 
+  }
+  \item{solver}{ 
+  Default is "solnp" for three different starting points. Alternatively,
+  "gosolnp" is especially recommended for complex programs.  
   }
 }
 
@@ -96,7 +100,7 @@ as lists of functions in the parameter vector through the arguments var.model an
 can plug in a list of formulas for each response for the mean and dispersion via the arguments form.mean 
 and form.disp. Furthermore, a suitable link
 and distribution assumption can be specified both for the mean and dispersion} \item{Finally, if the user does not plug in neither formulas nor models then JOP calculates automatically
-double generalized linear models by means of the function \code{\link{fitjoint}} from package JointModeling. 
+double generalized linear models by means of the function \code{\link{dglm}} from package dglm. 
 Furthermore, JOP performs a backward selection, starting from the full model with main effects, interactions
 and quadratic terms, and afterwards dropping the least significant covariate in each step.}} The data sets \code{datax} and \code{datay}
 are needed for model building. Both \code{datax} and \code{datay} have to be data frames where \code{datax} contains an experimental design with

@@ -92,9 +92,9 @@ function(x,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",pty="s",las=1,adj=0.5,
   col<-cols
   if(length(lty)!=(nx+ny))
   lty<-ltys
-
+  
   optplot<-matrix(NaN,ncol=nx,nrow=numbW)
-  for(i in 1:ny)
+  for(i in 1:nx)
   {
     optplot[,i]<-optmatrix[,i]-min(optmatrix[,i])
     for(j in 1:numbW)
@@ -102,13 +102,14 @@ function(x,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",pty="s",las=1,adj=0.5,
       optplot[j,i]<-ifelse(numeq(max(optmatrix[,i]),min(optmatrix[,i]))==TRUE,0.5,optplot[j,i]/(max(optmatrix[,i])-min(optmatrix[,i])))
     }  
   }
+  
   par(fig=c(0,0.45,0.15,0.85),bty="l",pty="s",las=1,adj=adj,...)
   matplot(xaxis1,optplot,type="l",col=col[1:(nx)],lty=lty[1:(nx)],xlab=xlab[1],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,...)
   mtext(ylab[1],side=3,at=1,cex=cex.lab)
   axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend),cex.axis=cex.axis)
   axis(2,at=c(0,0.5,1),labels=c("","",""),cex.axis=cex.axis)   
       
-  for(i in 1:ny)
+  for(i in 1:nx)
   {
     if(numeq(max(optmatrix[,i]),min(optmatrix[,i]))==TRUE)
     {
@@ -121,7 +122,6 @@ function(x,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",pty="s",las=1,adj=0.5,
   }
   legend("topright",dimnames(out$Parameters)[[2]][1:nx],col=col[1:nx],lty=lty[1:nx],bty="n",cex=cex.lab)
  
-  
   
     
   # right Plot  

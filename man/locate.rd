@@ -7,14 +7,16 @@ The function
 the corresponding design parameters. 
 }
 \usage{
-locate(x,xlu=NaN,no.col=FALSE,standard=TRUE,col=1,lty=1,
+locate(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,
 bty="l",pty="s",las=1,adj=0.5,cex=1,cex.lab=0.8,cex.axis=0.8,
 xlab=c("Stretch Vector","Stretch Vector"),ylab=c("Parameter Setting","Predicted Response"),...)
 }
 \arguments{
  \item{x}{object from JOP 
 }
-  \item{xlu}{The x-coordinate that indicates where the user assumes a good compromise,
+\item{ncom}{number of compromises that the user seeks to select, default is 1
+}
+  \item{xlu}{The vector of x-coordinate that indicates where the user assumes a good compromise,
   see Details  
   }
     \item{no.col}{ 
@@ -78,6 +80,6 @@ Sonja Kuhnt and Nikolaus Rudak
 data(datax)
 data(datay)
 outtest<-JOP(numbW=5,tau=list(0,0.05),datax=datax,datay=datay)
-locate(outtest,xlu=3)
+locate(outtest,xlu=c(3,4))
 }
 

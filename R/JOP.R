@@ -61,19 +61,40 @@
           return(y)
         }
     }
+ 
+      is.wholenumber <-
+      function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
+     
          ###############################################
          ###############################################
          #########  Main Function 'JOP'       ##########
          ###############################################
          ###############################################
       
-    JOP<-function(Wstart=-5,Wend=5,numbW=10,d=NULL,optreg="sphere",Domain=NULL,tau,datax,datay,form.mean=NULL,form.disp=NULL,family.mean=gaussian(),family.disp=Gamma(link="log"),mean.model=NULL,var.model=NULL,joplot=F)
+    JOP<-function(Wstart=-5,Wend=5,numbW=10,d=NULL,optreg="sphere",Domain=NULL,tau,datax,datay,form.mean=NULL,form.disp=NULL,family.mean=gaussian(),dlink="log",mean.model=NULL,var.model=NULL,joplot=F,solver="solnp")
     {
     ######### Checks if the input is correctly passed
     ######### START CHECK
       if(is.null(datax) && is.null(datay))
       {
         return(cat("\n Error: Experimental plan is needed!\n"))
+      }
+      
+      if(dlink=="log")
+      {
+        dlinkvec<-vector("list",dim(datay)[2])
+        for(i in 1:dim(datay)[2])
+        {
+          dlinkvec[[i]]<-dlink
+        }
+      }
+      if(length(family.mean)!=dim(datay)[2])
+      {
+         family.mean<-vector("list",dim(datay)[2])
+         for(i in 1:dim(datay)[2])
+         {
+            family.mean[[i]]<-gaussian()
+         }
       }
       
       if(is.data.frame(datax)==F||is.data.frame(datay)==F)
@@ -84,9 +105,7 @@
       nx<-dim(datax)[2]
       ny<-dim(datay)[2]
       
-      is.wholenumber <-
-      function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
-    
+
       if(is.wholenumber(numbW)==F)
       {
         return(cat("\n Error: numbW has to be a whole number!\n"))
@@ -223,157 +242,155 @@
        
       for(i in 1:ny)
       {
-        dispf[[i]]<-as.formula(paste("d~",rights,sep=""))
+        dispf[[i]]<-as.formula(paste("~",paste(xnames,collapse="+"),sep=""))#as.formula(paste("~",rights,sep=""))#
       }
       
       outmod<-vector("list",ny)
       names(outmod)<-resp
-      qval<-qt(0.95,dim(datax)[1]-nx-1)
+      qval<-0.1
       xnames<-names(datax)
+      
       for(i in 1:ny)
       {
+          k<-1
           if(!is.null(form.mean[[i]]) && !is.null(form.disp[[i]]))
           {
             daten<-data.frame(datay[i],datax)
-            invisible(capture.output(outmod[[i]]<-try(fitjoint("glm",form.mean[[i]],form.disp[[i]],data=daten,family.mean=family.mean,family.disp=family.disp),silent=T)))
+            dlink<-dlinkvec[[i]]
+            invisible(capture.output(outmod[[i]]<-try(dglm(form.mean[[i]],form.disp[[i]],data=daten,family=family.mean[[i]],dlink=dlink,method="reml"),silent=T)))
             if(is.character(outmod[[i]]))
             {
               return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n","Check the distribution assumption or the link function\n",sep="")))
             }  
             k<-0
           }
+          formm<-0
           if(!is.null(form.mean[[i]]) && is.null(form.disp[[i]]))
           {
-            flist[[i]]<-formula(glm(form.mean[[i]],family=family.mean,data=data.frame(datax,datay)))
+            flist[[i]]<-form.mean[[i]]
             k<-1
+            formm<-1
           }
+          formd<-0
           if(is.null(form.mean[[i]]) && !is.null(form.disp[[i]]))
           {
-           
+            dispf[[i]]<-form.disp[[i]]
             k<-1
+            formd<-1
           }
-          if(is.null(form.mean[[i]]) || is.null(form.mean))
-          {  
-            flist[[i]]<-step(glm(flist[[i]],family=family.mean,data=data.frame(datax,datay)),trace=0,k=log(nx))
-            k<-1
-            coeff<-flist[[i]]$coefficients
-            ### The following routine checks if all main effects of higher order terms are included
-            ## start
-            addcoeff<-NULL
-            iter<-1
-            if(length(coeff)>1)
+          if((is.null(form.mean[[i]])||formm==1) && (is.null(form.disp[[i]])||formd==1))
+          {
+            while(k==1)
             {
-              for(ii in 2:length(coeff))
-              {
-                 for(jj in 1:length(xnames))
-                 {
-                   if(names(coeff)[ii]!=xnames[jj] && names(coeff)[ii]==paste("I(",xnames[jj],"^2)",sep=""))
-                   {
-                      addcoeff[iter]<-xnames[jj]
-                      iter<-iter+1   
-                   }
-                   for(kk in jj:length(xnames))
-                   {
-                      if(names(coeff)[ii]!=xnames[kk] && kk!=jj && names(coeff)[ii]==paste(xnames[jj],":",xnames[kk],sep="") || coeff[ii]==paste(xnames[kk],":",xnames[jj],sep=""))
-                      {
-                        addcoeff[iter]<-xnames[kk]
-                        iter<-iter+1
-                      }
-                   }
-                 }
-              }
-            }
-            ## end
-            if(iter==1)
-            {           
-              flist[[i]]<-formula(flist[[i]])
-            }
-            if(iter>1)
-            {
-              flist[[i]]<-update.formula(formula(flist[[i]]),paste("~.",paste(addcoeff,collapse="+"),sep="+"))
-            }
-            if(!is.null(form.disp[[i]]))
-            {
-              k<-0
               daten<-data.frame(datay[i],datax)
-              invisible(capture.output(outmod[[i]]<-try(fitjoint("glm",flist[[i]],form.disp[[i]],data=daten,family.mean=family.mean,family.disp=family.disp),silent=T)))
+              dlink<-dlinkvec[[i]]
+              invisible(capture.output(outmod[[i]]<-try(dglm(flist[[i]],dispf[[i]],data=daten,family=family.mean[[i]],dlink=dlink,method="reml"),silent=T)))
               if(is.character(outmod[[i]]))
               {
                 return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n","Check the distribution assumption or the link function\n",sep="")))
               }
-              if(any(is.na(outmod[[i]]$mod.mean$coefficients))==TRUE||any(is.na(outmod[[i]]$mod.disp$coefficients))==TRUE)
+              outm<-summary(outmod[[i]])$coefficients
+              outd<-summary(outmod[[i]])$dispersion.summary$coefficients
+              helpa<-outm[,4]
+              helpb<-outd[,4]
+              mina<-ifelse(length(helpa)>1,max(helpa[-1]),0.5*qval)
+              mina<-ifelse(formm==1,0.5*qval,mina)
+              minb<-ifelse(length(helpb)>1,max(helpb[-1]),0.5*qval)
+              minb<-ifelse(formd==1,0.5*qval,minb)
+              if(minb<qval && mina<qval)
               {
-                return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n Some of the coefficients are NA!\n\n","Check the distribution assumption or the link function\n",sep="")))
-              }
-            }
-          }
-          while(k==1)
-          {
-            daten<-data.frame(datay[i],datax)
-            invisible(capture.output(outmod[[i]]<-try(fitjoint("glm",flist[[i]],dispf[[i]],data=daten,family.mean=family.mean,family.disp=family.disp),silent=T)))
-            if(is.character(outmod[[i]]))
-            {
-              return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n","Check the distribution assumption or the link function\n",sep="")))
-            }
-            if(any(is.na(outmod[[i]]$mod.mean$coefficients))==TRUE||any(is.na(outmod[[i]]$mod.disp$coefficients))==TRUE)
-            {
-              return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n Some of the coefficients are NA!\n\n","Check the distribution assumption or the link function\n",sep="")))
-            }
-            outd<-summary(outmod[[i]]$mod.disp)$coefficients
-            helpb<-outd[,3]
-            minb<-ifelse(length(helpb)>1,min(abs(helpb)[-1]),2*qval)
-            if(minb>qval)
-            {
-              k<-0
-              coeff<-outmod[[i]]$mod.disp$coefficients
-              ### The following routine checks if all main effects of higher order terms are included
-              ## START
-              addcoeff<-NULL
-              iter<-1
-              if(length(coeff)>1)
-              {
-                for(ii in 2:length(coeff))
+                k<-0
+                coeff<-outmod[[i]]$dispersion.fit$coefficients
+                ### The following routine checks if all main effects of higher order terms are included
+                ## START
+                addcoeff<-NULL
+                iter<-1
+                if(length(coeff)>1)
                 {
-                   for(jj in 1:length(xnames))
-                   {
-                     if(names(coeff)[ii]!=xnames[jj] && names(coeff)[ii]==paste("I(",xnames[jj],"^2)",sep=""))
+                  for(ii in 2:length(coeff))
+                  {
+                     for(jj in 1:length(xnames))
                      {
-                        addcoeff[iter]<-xnames[jj]
-                        iter<-iter+1   
+                       if(names(coeff)[ii]!=xnames[jj] && names(coeff)[ii]==paste("I(",xnames[jj],"^2)",sep=""))
+                       {
+                          addcoeff[iter]<-xnames[jj]
+                          iter<-iter+1   
+                       }
+                       for(kk in jj:length(xnames))
+                       {
+                          if(names(coeff)[ii]!=xnames[kk] && kk!=jj && names(coeff)[ii]==paste(xnames[jj],":",xnames[kk],sep="") || coeff[ii]==paste(xnames[kk],":",xnames[jj],sep=""))
+                          {
+                            addcoeff[iter]<-xnames[kk]
+                            iter<-iter+1
+                          }
+                       }
                      }
-                     for(kk in jj:length(xnames))
+                  }
+                }
+                ## end
+                updisp<-0
+                if(iter==1)
+                {           
+                  dispf[[i]]<-formula(dispf[[i]])
+                }
+                if(iter>1)
+                {
+                  updisp<-1
+                  dispf[[i]]<-update.formula(formula(dispf[[i]]),paste("~.",paste(addcoeff,collapse="+"),sep="+"))
+                }
+                
+                coeff<-outmod[[i]]$coefficients
+                ### The following routine checks if all main effects of higher order terms are included
+                ## START
+                addcoeff<-NULL
+                iter<-1
+                if(length(coeff)>1)
+                {
+                  for(ii in 2:length(coeff))
+                  {
+                     for(jj in 1:length(xnames))
                      {
-                        if(names(coeff)[ii]!=xnames[kk] && kk!=jj && names(coeff)[ii]==paste(xnames[jj],":",xnames[kk],sep="") || coeff[ii]==paste(xnames[kk],":",xnames[jj],sep=""))
-                        {
-                          addcoeff[iter]<-xnames[kk]
-                          iter<-iter+1
-                        }
+                       if(names(coeff)[ii]!=xnames[jj] && names(coeff)[ii]==paste("I(",xnames[jj],"^2)",sep=""))
+                       {
+                          addcoeff[iter]<-xnames[jj]
+                          iter<-iter+1   
+                       }
+                       for(kk in jj:length(xnames))
+                       {
+                          if(names(coeff)[ii]!=xnames[kk] && kk!=jj && names(coeff)[ii]==paste(xnames[jj],":",xnames[kk],sep="") || coeff[ii]==paste(xnames[kk],":",xnames[jj],sep=""))
+                          {
+                            addcoeff[iter]<-xnames[kk]
+                            iter<-iter+1
+                          }
+                       }
                      }
-                   }
+                  }
                 }
-              }
-              ## end
-              if(iter==1)
-              {           
-                dispf[[i]]<-formula(dispf[[i]])
-              }
-              if(iter>1)
-              {
-                dispf[[i]]<-update.formula(formula(dispf[[i]]),paste("~.",paste(addcoeff,collapse="+"),sep="+"))
-                invisible(capture.output(outmod[[i]]<-try(fitjoint("glm",flist[[i]],dispf[[i]],data=daten,family.mean=family.mean,family.disp=family.disp),silent=T)))
-                if(is.character(outmod[[i]]))
+                ## end
+                if(iter==1)
+                {           
+                  flist[[i]]<-formula(flist[[i]])
+                }
+                if(iter>1 || updisp==1)
                 {
-                  return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n","Check the distribution assumption or the link function\n",sep="")))
+                  flist[[i]]<-update.formula(formula(flist[[i]]),paste(resp[i],"~.+",paste(addcoeff,collapse="+"),sep=""))
+                  dlink<-dlinkvec[[i]]
+                  invisible(capture.output(outmod[[i]]<-try(dglm(flist[[i]],dispf[[i]],data=daten,family=family.mean[[i]],dlink=dlink,method="reml"),silent=T)))
+                  if(is.character(outmod[[i]]))
+                  {
+                    return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n","Check the distribution assumption or the link function\n",sep="")))
+                  }
                 }
-                if(any(is.na(outmod[[i]]$mod.mean$coefficients))==TRUE||any(is.na(outmod[[i]]$mod.disp$coefficients))==TRUE)
-                {
-                  return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n Some of the coefficients are NA!\n\n","Check the distribution assumption or the link function\n",sep="")))
-                }
+
               }
-            }
-            if(minb<qval)
-            { 
-                dispf[[i]]<-as.formula(paste("d~",ifelse(length(helpb)==2,"1",paste(names(helpb[-1])[-which(abs(helpb[-1])==minb)],collapse="+")),sep=""))
+              if(minb>qval && minb>=mina)
+              { 
+                  dispf[[i]]<-as.formula(paste("~",ifelse(length(helpb)==2,"1",paste(names(helpb[-1])[-which(helpb[-1]==minb)],collapse="+")),sep=""))
+              }
+              if(mina>qval && mina>minb)
+              { 
+                  flist[[i]]<-as.formula(paste(resp[i],"~",ifelse(length(helpa)==2,"1",paste(names(helpa[-1])[-which(helpa[-1]==mina)],collapse="+")),sep=""))
+              }
             }
           }
       }
@@ -383,7 +400,7 @@
       {
         allx<-NULL
         xnames<-names(datax)
-        coeff<-outmod[[p]]$mod.mean$coefficients
+        coeff<-outmod[[p]]$coefficients
         value<-coeff[1]
         if(length(coeff)>1)
         {
@@ -410,13 +427,13 @@
           }
         }
         names(value)<-NULL
-        return(outmod[[p]]$mod.mean$family$linkinv(value))
+        return(outmod[[p]]$family$linkinv(value))
       }
       varmd<-function(x,p)
       {
         allx<-NULL
         xnames<-names(datax)
-        coeff<-outmod[[p]]$mod.disp$coefficients
+        coeff<-outmod[[p]]$dispersion.fit$coefficients
         value<-coeff[1]
         if(length(coeff)>1)
         {
@@ -443,8 +460,23 @@
           }
         }
         names(value)<-NULL
-        return(outmod[[p]]$mod.mean$family$variance(meanmd(x,p))*outmod[[p]]$mod.disp$family$linkinv(value))
+        return(outmod[[p]]$family$variance(meanmd(x,p))*outmod[[p]]$dispersion.fit$family$linkinv(value))
       }
+
+#      meanmd<-function(x,p)
+#      {
+#        x<-as.data.frame(t(x))
+#        names(x)<-names(datax)
+#        value<-predict(outmod[[p]],x,type="response")
+#        return(value)
+#      }
+#      varmd<-function(x,p)
+#      {
+#        x<-as.data.frame(t(x))
+#        names(x)<-names(datax)
+#        value<-predict(outmod[[p]]$dispersion.fit,x,type="response")
+#        return(value)
+#      }
 
       for(ii in 1:ny)
       { 
@@ -485,11 +517,11 @@
           lower[i]<-min(datax[,i])
           upper[i]<-max(datax[,i])
         }
-        if(!is.null(Domain))
-        {
-          lower<-Domain[,1]
-          upper<-Domain[,2]
-        }
+      }
+      if(!is.null(Domain))
+      {
+        lower<-Domain[,1]
+        upper<-Domain[,2]
       }
       for(i in 1:ny)
       {  
@@ -624,6 +656,12 @@
       #  Solver starts with three initial vectors 
       #  Then take best solution
       #
+    if(solver=="gosolnp")
+    {
+      opt<-gosolnp(fun=riscfun,LB=lower,UB=upper,control=list(trace=0),rseed=100+i)
+    }
+    if(solver=="solnp")
+    {
       opt1<-solnp(start1,fun=riscfun,LB=lower,UB=upper,control=list(trace=0))
       opt<-opt1
       opt2<-solnp(start2,fun=riscfun,LB=lower,UB=upper,control=list(trace=0))
@@ -636,6 +674,7 @@
       {
         opt<-opt3
       }
+    }
       optval[i]<-opt$values[length(opt$values)]
       optmatrix[i,]<-trafopar(opt$pars,optreg)
       for(k in 1:ny)
@@ -651,6 +690,7 @@
           deviation[i,k]<-as.numeric(var.model[[k]](trafopar(opt$pars,optreg)))        
         }
       }
+    
       ####
       #   Solver finished
       #
