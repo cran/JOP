@@ -58,17 +58,17 @@ for x-axis and y-axis of the left hand plot and the second entry contains the la
 for x-axis and y-axis of the right hand plot. Additional graphical arguments can be plugged in.
 }
 \references{
-Sonja Kuhnt and Martina Erdbruegge (2004), A strategy of robust paramater design for multiple responses, 
+Sonja Kuhnt and Martina Erdbruegge (2004). A strategy of robust paramater design for multiple responses, 
 Statistical Modelling; 4: 249-264, TU Dortmund.
 
-Martina Erdbruegge, Sonja Kuhnt and Nikolaus Rudak (2011), Joint optimization of independent multiple responses based on loss functions,
+Martina Erdbruegge, Sonja Kuhnt and Nikolaus Rudak (2011). Joint optimization of independent multiple responses based on loss functions,
 Quality and Reliability Engineering International 27, doi: 10.1002/qre.1229.
 
-Joseph J. Pignatiello (1993), Strategies for robust multiresponse quality engineering, IIE Transactions 25, 5-15, Texas A M University.
+Joseph J. Pignatiello (1993). Strategies for robust multiresponse quality engineering, IIE Transactions 25, 5-15, Texas A M University.
 
-Alexios Ghalanos and Stefan Theussl (2010). Rsolnp: General Non-linear Optimization Using Augmented Lagrange Multiplier Method. R package version 1.0-6. 
+Alexios Ghalanos and Stefan Theussl (2012). Rsolnp: General Non-linear Optimization Using Augmented Lagrange Multiplier Method. R package version 1.12. 
 
-Mathieu Ribatet and Bertrand Iooss (2010). JointModeling: Joint Modelling of Mean and Dispersion. R package version 1.0-2.
+Peter K Dunn and Gordon K Smyth (2012). dglm: Double generalized linear models, R package version 1.6.2.
 }
 \author{
 Sonja Kuhnt and Nikolaus Rudak
