@@ -71,7 +71,7 @@ function(x,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",pty="s",las=1,adj=0.5,
       cols<-1:(nx+ny+1)
       cols<-cols[-7]
     }
-    ltys<-rep(1,nx+ny)
+    ltys<-c(1:nx,1:ny)
   }
   if(no.col==TRUE)
   {
@@ -102,7 +102,6 @@ function(x,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",pty="s",las=1,adj=0.5,
       optplot[j,i]<-ifelse(numeq(max(optmatrix[,i]),min(optmatrix[,i]))==TRUE,0.5,optplot[j,i]/(max(optmatrix[,i])-min(optmatrix[,i])))
     }  
   }
-  
   par(fig=c(0,0.45,0.15,0.85),bty="l",pty="s",las=1,adj=adj,...)
   matplot(xaxis1,optplot,type="l",col=col[1:(nx)],lty=lty[1:(nx)],xlab=xlab[1],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,...)
   mtext(ylab[1],side=3,at=1,cex=cex.lab)

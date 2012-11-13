@@ -61,7 +61,7 @@ function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",pty="s
         cols<-1:(nx+ny+1)
         cols<-cols[-7]
       }
-      ltys<-rep(1,nx+ny)
+      ltys<-c(1:nx,1:ny)
     }
     if(no.col==TRUE)
     {

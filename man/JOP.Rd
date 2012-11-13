@@ -85,8 +85,9 @@ JOP returns a list containing the following elements:
 \item{DGLM}{If no models assigned then the list DGLM contains the calculated models for the mean and dispersion for every response}
 \item{RiskminimalParameters}{Parameters that minimize the squared sum of single risks among all calculated Parameters}
 \item{RiskminimalResponses}{Responses for the risk minimal parameters}
-\item{diagA}{Diagonal values of the standardization matrix}
 \item{ValW}{Values for Wstart and Wend}
+\item{d}{Slope vector}
+\item{numbW}{Number of weight matrices}
 }
 \details{
 The main function \code{JOP} is a package for multiresponse optimization which aims to minimize a risc function 
