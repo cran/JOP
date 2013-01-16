@@ -8,10 +8,25 @@ visualizes the optimal design parameters and the appropriate predicted responses
 optimization plot introduced by Kuhnt and Erdbruegge (2004). 
 }
 \usage{
-JOP(Wstart=-5,Wend=5,numbW=10,d=NULL,optreg="sphere",Domain=NULL,tau,datax,datay,form.mean=NULL,form.disp=NULL,
-family.mean=gaussian(),dlink="log",mean.model=NULL,var.model=NULL,joplot=F,solver="solnp")
+JOP(datax, datay, tau = "min", Wstart = -5, Wend = 5, numbW = 10, d = NULL, 
+optreg = "sphere", Domain = NULL, form.mean = NULL, form.disp = NULL, 
+family.mean = gaussian(), dlink = "log", mean.model = NULL, var.model = NULL,
+joplot = FALSE, solver = "solnp")
 }
 \arguments{
+  \item{datax}{
+  data set with parameter settings from an experimental design (data.frame). 
+  Columns have to be named.
+}
+  \item{datay}{
+  data set with responses resulting from an experimental design (data.frame).
+  Columns have to be named.
+}
+  \item{tau}{
+  list of target values or single character value for the corresponding responses, where also "min"
+  for minimization or "max" for maximization is possible. If \code{tau="min"} or \code{tau="max"}, then all
+  responses are minimized or maximized. 
+}
   \item{Wstart}{
   value to calculate the sequence of weight matrices (see Details)
 }
@@ -34,18 +49,6 @@ family.mean=gaussian(),dlink="log",mean.model=NULL,var.model=NULL,joplot=F,solve
   \item{Domain}{
   box constraints. Column 1 for lower contraints and Column 2 for upper contraints.
   Row i corresponds to Parameter i.
-}
-  \item{tau}{
-  list of numeric target values for the corresponding responses or specification "min"
-  for minimization or "max" for maximization
-}
-  \item{datax}{
-  data set with parameter settings from an experimental design (data.frame). 
-  Columns have to be named.
-}
-  \item{datay}{
-  data set with responses resulting from an experimental design (data.frame).
-  Columns have to be named.
 }
   \item{form.mean}{
   list of formulas for mean of each response
@@ -126,10 +129,8 @@ Peter K Dunn and Gordon K Smyth (2012). dglm: Double generalized linear models, 
 
 \examples{
 # Example: Sheet metal hydroforming process
-data(datax)
-data(datay)
-
 # Run JOP without Model specification
-outtest<-JOP(numbW=5,tau=list(0,0.05),datax=datax,datay=datay,joplot=TRUE)
+
+outtest <- JOP(datax = datax, datay = datay, tau = list(0, 0.05), numbW = 5, joplot = TRUE)
 }
 

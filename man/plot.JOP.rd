@@ -6,9 +6,10 @@ The function \code{plot.JOP} takes the output
 produced by \code{JOP} and returns the joint optimization plot.
 }
 \usage{
-\method{plot}{JOP}(x,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",
-pty="s",las=1,adj=0.5,cex=1,cex.lab=0.8,cex.axis=0.8,
-xlab=c("Stretch Vector","Stretch Vector"),ylab=c("Parameter Setting","Predicted Response"),...)
+\method{plot}{JOP}(x, no.col = FALSE, standard = TRUE, col = 1, lty = 1, bty = "l",
+las = 1 ,adj = 0.5 ,cex = 1 ,cex.lab = 1 ,cex.axis = 1,
+xlab = c("Stretch Vector" , "Stretch Vector"),
+ylab = c("Parameter Setting" , "Predicted Response"),...)
 }
 \arguments{
  \item{x}{object from JOP 
@@ -27,7 +28,7 @@ xlab=c("Stretch Vector","Stretch Vector"),ylab=c("Parameter Setting","Predicted 
   }
     \item{ylab}{Graphical argument, see details.
   }
-  \item{bty,pty,las,cex,adj,cex.lab,cex.axis}{Graphical arguments
+  \item{bty,las,cex,adj,cex.lab,cex.axis}{Graphical arguments
   }
     \item{...}{ 
   Further graphical arguments passed to \code{\link{plot}}. 
@@ -58,11 +59,9 @@ Peter K Dunn and Gordon K Smyth (2012). dglm: Double generalized linear models, 
 
 \examples{
 # Example: Sheet metal hydroforming process
-data(datax)
-data(datay)
+outtest <- JOP(datax = datax, datay = datay, tau = list(0 , 0.05), numbW = 5)
 
-outtest<-JOP(numbW=5,tau=list(0,0.05),datax=datax,datay=datay)
-
-plot(outtest)
+# Several graphical parameters can be plugged in
+plot(outtest, col = 5:8)
 }
 

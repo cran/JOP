@@ -71,7 +71,7 @@
          ###############################################
          ###############################################
       
-    JOP<-function(Wstart=-5,Wend=5,numbW=10,d=NULL,optreg="sphere",Domain=NULL,tau,datax,datay,form.mean=NULL,form.disp=NULL,family.mean=gaussian(),dlink="log",mean.model=NULL,var.model=NULL,joplot=F,solver="solnp")
+    JOP<-function(datax,datay,tau="min",Wstart=-5,Wend=5,numbW=10,d=NULL,optreg="sphere",Domain=NULL,form.mean=NULL,form.disp=NULL,family.mean=gaussian(),dlink="log",mean.model=NULL,var.model=NULL,joplot=FALSE,solver="solnp")
     {
     ######### Checks if the input is correctly passed
     ######### START CHECK
@@ -97,7 +97,7 @@
          }
       }
       
-      if(is.data.frame(datax)==F||is.data.frame(datay)==F)
+      if(is.data.frame(datax)==FALSE||is.data.frame(datay)==FALSE)
       {
         return(cat("\n Error: datax and datay have to be data frames\n"))
       }
@@ -106,7 +106,7 @@
       ny<-dim(datay)[2]
       
 
-      if(is.wholenumber(numbW)==F)
+      if(is.wholenumber(numbW)==FALSE)
       {
         return(cat("\n Error: numbW has to be a whole number!\n"))
       }
@@ -145,18 +145,28 @@
       if(length(d)!=ny)
       {
         return(cat("\n Error: Dimension of d do not match to number of responses!\n"))
-      }   
-      if(is.null(tau))
-      {
-        return(cat("\n Error: Type in the target values, please!\n"))
-      } 
-      if(length(tau)!=ny)
-      {
-        return(cat("\n Error: Dimension of tau do not match to number of responses\n"))
       }
       if(!is.list(tau))
       {
-        return(cat("tau has to be of type list!\n"))
+        taucor<-0
+        if(tau=="min" || tau=="max")
+        {
+          tau1<-vector("list",ny)
+          for(i in 1:ny)
+          {
+            tau1[[i]]<-tau
+          }
+          tau<-tau1  
+          taucor<-1
+        }
+        if(taucor==0)
+        {
+          return(cat("\n Error: tau is not correctly specified!\n")) 
+        }
+      }
+      if(length(tau)!=ny)
+      {
+        return(cat("\n Error: Dimension of tau do not match to number of responses\n"))
       }
       for(i in 1:length(tau))
       {
@@ -168,7 +178,7 @@
       tau1<-tau
       if(!is.null(mean.model) && !is.null(mean.model))
       { 
-        if(is.list(mean.model)==F || is.list(var.model)==F)
+        if(is.list(mean.model)==FALSE || is.list(var.model)==FALSE)
         {
           return(cat("\n Error: mean.model and var.model have to be of type 'list'\n"))
         }
@@ -180,8 +190,8 @@
           }
           else
           {
-            testmean<-try(mean.model[[o]](as.numeric(datax[1,])),silent=T)
-            testvar<-try(var.model[[o]](as.numeric(datax[1,])),silent=T)
+            testmean<-try(mean.model[[o]](as.numeric(datax[1,])),silent=TRUE)
+            testvar<-try(var.model[[o]](as.numeric(datax[1,])),silent=TRUE)
             if(is.character(testmean) || is.character(testvar))
             {
               return(cat(paste("\n Error: Check your functions for mean and dispersion for response",names(datay)[o],"!\n",sep="")))
@@ -255,9 +265,9 @@
           k<-1
           if(!is.null(form.mean[[i]]) && !is.null(form.disp[[i]]))
           {
-            daten<-data.frame(datay[i],datax)
+            dataset<-data.frame(datay[i],datax)
             dlink<-dlinkvec[[i]]
-            invisible(capture.output(outmod[[i]]<-try(dglm(form.mean[[i]],form.disp[[i]],data=daten,family=family.mean[[i]],dlink=dlink,method="reml"),silent=T)))
+            invisible(capture.output(outmod[[i]]<-try(dglm(form.mean[[i]],form.disp[[i]],data=dataset,family=family.mean[[i]],dlink=dlink,method="reml"),silent=TRUE)))
             if(is.character(outmod[[i]]))
             {
               return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n","Check the distribution assumption or the link function\n",sep="")))
@@ -282,9 +292,9 @@
           {
             while(k==1)
             {
-              daten<-data.frame(datay[i],datax)
+              dataset<-data.frame(datay[i],datax)
               dlink<-dlinkvec[[i]]
-              invisible(capture.output(outmod[[i]]<-try(dglm(flist[[i]],dispf[[i]],data=daten,family=family.mean[[i]],dlink=dlink,method="reml"),silent=T)))
+              invisible(capture.output(outmod[[i]]<-try(dglm(flist[[i]],dispf[[i]],data=dataset,family=family.mean[[i]],dlink=dlink,method="reml"),silent=TRUE)))
               if(is.character(outmod[[i]]))
               {
                 return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n","Check the distribution assumption or the link function\n",sep="")))
@@ -375,7 +385,7 @@
                 {
                   flist[[i]]<-update.formula(formula(flist[[i]]),paste(resp[i],"~.+",paste(addcoeff,collapse="+"),sep=""))
                   dlink<-dlinkvec[[i]]
-                  invisible(capture.output(outmod[[i]]<-try(dglm(flist[[i]],dispf[[i]],data=daten,family=family.mean[[i]],dlink=dlink,method="reml"),silent=T)))
+                  invisible(capture.output(outmod[[i]]<-try(dglm(flist[[i]],dispf[[i]],data=dataset,family=family.mean[[i]],dlink=dlink,method="reml"),silent=TRUE)))
                   if(is.character(outmod[[i]]))
                   {
                     return(cat(paste("\n Error: Model building failed for ",names(datay)[i],"\n\n","Check the distribution assumption or the link function\n",sep="")))
@@ -747,7 +757,7 @@
     ####
     #  Joint optimization Plot 
     #  if joplot=T
-    if(joplot==T)plot(optimres)
+    if(joplot==TRUE)plot(optimres)
     
     return(optimres)
   }     

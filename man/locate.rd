@@ -7,9 +7,10 @@ The function
 the corresponding design parameters. 
 }
 \usage{
-locate(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,
-bty="l",pty="s",las=1,adj=0.5,cex=1,cex.lab=0.8,cex.axis=0.8,
-xlab=c("Stretch Vector","Stretch Vector"),ylab=c("Parameter Setting","Predicted Response"),...)
+locate(x, ncom = 1 ,xlu = NULL ,no.col = FALSE ,standard = TRUE ,col = 1 ,lty = 1,
+bty = "l" ,las = 1 ,adj = 0.5 ,cex = 1 ,cex.lab = 1 ,cex.axis = 1,
+xlab = c("Stretch Vector" , "Stretch Vector"),
+ylab = c("Parameter Setting" , "Predicted Response"),...)
 }
 \arguments{
  \item{x}{object from JOP 
@@ -33,7 +34,7 @@ xlab=c("Stretch Vector","Stretch Vector"),ylab=c("Parameter Setting","Predicted 
   }
     \item{ylab}{Graphical argument, see details.
   }
-  \item{bty,pty,las,cex,adj,cex.lab,cex.axis}{Graphical arguments
+  \item{bty,las,cex,adj,cex.lab,cex.axis}{Graphical arguments
   }
     \item{...}{ 
   Further graphical arguments passed to \code{\link{plot}}. 
@@ -77,9 +78,9 @@ Sonja Kuhnt and Nikolaus Rudak
 
 \examples{
 # Example: Sheet metal hydroforming process
-data(datax)
-data(datay)
-outtest<-JOP(numbW=5,tau=list(0,0.05),datax=datax,datay=datay)
-locate(outtest,xlu=c(3,4))
+outtest <- JOP(datax = datax, datay = datay, tau = list(0, 0.05), numbW = 5)
+
+# Location of points
+locate(outtest, xlu = c(3, 4))
 }
 
