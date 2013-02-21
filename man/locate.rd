@@ -10,7 +10,7 @@ the corresponding design parameters.
 locate(x, ncom = 1 ,xlu = NULL ,no.col = FALSE ,standard = TRUE ,col = 1 ,lty = 1,
 bty = "l" ,las = 1 ,adj = 0.5 ,cex = 1 ,cex.lab = 1 ,cex.axis = 1,
 xlab = c("Stretch Vector" , "Stretch Vector"),
-ylab = c("Parameter Setting" , "Predicted Response"),...)
+ylab = c("Parameter Setting" , "Predicted Response"),lwd=1,...)
 }
 \arguments{
  \item{x}{object from JOP 
@@ -34,7 +34,7 @@ ylab = c("Parameter Setting" , "Predicted Response"),...)
   }
     \item{ylab}{Graphical argument, see details.
   }
-  \item{bty,las,cex,adj,cex.lab,cex.axis}{Graphical arguments
+  \item{bty,las,cex,adj,cex.lab,cex.axis,lwd}{Graphical arguments
   }
     \item{...}{ 
   Further graphical arguments passed to \code{\link{plot}}. 

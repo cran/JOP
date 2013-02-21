@@ -36,7 +36,7 @@
 #######################
 
 locate <-
-function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",las=1,adj=0.5,cex=1,cex.lab=1,cex.axis=1,xlab=c("Stretch Vector","Stretch Vector"),ylab=c("Parameter Setting","Predicted Response"),...)
+function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",las=1,adj=0.5,cex=1,cex.lab=1,cex.axis=1,xlab=c("Stretch Vector","Stretch Vector"),ylab=c("Parameter Setting","Predicted Response"),lwd=1,...)
 {  
     ## Setting Values
     out<-x
@@ -100,8 +100,7 @@ function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",las=1,
       flush.console()
     }
   
-  
-    plot(x=out,no.col=no.col,standard=standard,col=col,lty=lty,bty=bty,las=las,adj=adj,cex=cex,cex.lab=cex.lab,cex.axis=cex.axis,xlab=xlab,ylab=ylab,...) 
+    plot(x=out,no.col=no.col,standard=standard,col=col,lty=lty,bty=bty,las=las,adj=adj,cex=cex,cex.lab=cex.lab,cex.axis=cex.axis,xlab=xlab,ylab=ylab,lwd=lwd,...) 
   
 
     ####
@@ -145,8 +144,8 @@ function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",las=1,
       }  
     }
     
-    par(fig=c(0,0.45,0.15,0.85),mar=c(0,5,0,0),bty="l",las=1,adj=adj)
-    matplot(xaxis1,optplot,type="l",col=col[1:(nx)],lty=lty[1:(nx)],xlab=xlab[1],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,...)
+    par(mfrow=c(1,2),las=1,bty="l",adj=adj,mar=c(4,5,3,2))
+    matplot(xaxis1,optplot,type="l",col=col[1:(nx)],lty=lty[1:(nx)],xlab=xlab[1],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,lwd=lwd,...)
     mtext(ylab[1],side=3,at=1,cex=cex.lab)
     axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend),cex.axis=cex.axis)
     axis(2,at=c(0,0.5,1),labels=c("","",""),cex.axis=cex.axis)   
@@ -167,7 +166,7 @@ function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",las=1,
         points(xlp[j],optplot[xlp[j],i],col="black",cex=cex)
       }
     }
-    legend("topright",dimnames(out$Parameters)[[2]][1:nx],col=col[1:nx],lty=lty[1:nx],bty="n",cex=cex.lab)
+    legend("topright",dimnames(out$Parameters)[[2]][1:nx],col=col[1:nx],lty=lty[1:nx],bty="n",cex=cex.lab,lwd=lwd)
  
   
     # right Plot  
@@ -195,8 +194,8 @@ function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",las=1,
           reoptminusdev[j,i]<-ifelse(numeq(tau[i],min(reoptmatrix[,i]))==TRUE&&numeq(tau[i],max(reoptmatrix[,i]))==TRUE,0.35,ifelse(tau[i]>max(reoptmatrix[,i]+deviation[,i]),reoptminusdev[j,i]/(tau[i]-min(reoptmatrix[,i]-deviation[,i])),reoptminusdev[j,i]/(max(reoptmatrix[,i]+deviation[,i])-min(reoptmatrix[,i]-deviation[,i],tau[i]))))
         }   
       }
-      par(fig=c(0.5,0.95,0.15,0.85),mar=c(0,3,0,2),new=TRUE,bty=bty,las=las)
-      matplot(xaxis1,reoptplot,type="l",col=col[(nx+1):(nx+ny)],lty=lty[(nx+1):(nx+ny)],xlab=xlab[2],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,...)
+      par(mar=c(4,3,3,2),mgp=c(3,1,0),bty=bty,las=las)
+      matplot(xaxis1,reoptplot,type="l",col=col[(nx+1):(nx+ny)],lty=lty[(nx+1):(nx+ny)],xlab=xlab[2],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,lwd=lwd,...)
       mtext(ylab[2],side=3,at=1,cex=cex.lab)
       axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend),cex.axis=cex.axis)
       axis(2,at=c(0,0.5,1),labels=c("","",""),cex.axis=cex.axis)   
@@ -220,8 +219,8 @@ function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",las=1,
           reoptplot[j,i]<-ifelse(numeq(tau[i],min(reoptmatrix[,i]))==TRUE&&numeq(tau[i],max(reoptmatrix[,i]))==TRUE,0.5,ifelse(tau[i]>max(reoptmatrix[,i]),reoptplot[j,i]/(tau[i]-min(reoptmatrix[,i])),reoptplot[j,i]/(max(reoptmatrix[,i])-min(reoptmatrix[,i],tau[i]))))
         }  
       }
-      par(fig=c(0.5,0.95,0.15,0.85),mar=c(0,3,0,2),new=TRUE,bty=bty,las=las)
-      matplot(xaxis1,reoptplot,type="l",col=col[(nx+1):(nx+ny)],lty=lty[(nx+1):(nx+ny)],xlab=xlab[2],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,...)
+      par(mar=c(4,3,3,2),mgp=c(3,1,0),bty=bty,las=las)
+      matplot(xaxis1,reoptplot,type="l",col=col[(nx+1):(nx+ny)],lty=lty[(nx+1):(nx+ny)],xlab=xlab[2],ylab="",ylim=c(0,1.25),xaxt="n",yaxt="n",cex.lab=cex.lab,lwd=lwd,...)
       mtext(ylab[2],side=3,at=1,cex=cex.lab)
       axis(1,at=c(1,1+(numbW-1)/2,numbW),labels=c(Wstart,Wstart+0.5*(Wend-Wstart),Wend),cex.axis=cex.axis)
       axis(2,at=c(0,0.5,1),labels=c("","",""),cex.axis=cex.axis)   
@@ -267,7 +266,7 @@ function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",las=1,
         {
           point1<-c(1+(j-1)*(numbW-1)/length(zaehler[[i]]),1+j*(numbW-1)/length(zaehler[[i]]))
           point2<-c(targetvaluespos[i],targetvaluespos[i])
-          lines(point1,point2,col=col[nx+i],lty=lty[nx+i])
+          lines(point1,point2,col=col[nx+i],lty=lty[nx+i],lwd=lwd)
           mtext(round(tau[i],digits=2+countdig(tau[i])),side=4,at=targetvaluespos[i]-(j-1)*(cex.axis*3/4)*1.25/26,col=col[nx+i],cex=cex.axis,line=-0.2)
         }
       }
@@ -292,7 +291,7 @@ function(x,ncom=1,xlu=NULL,no.col=FALSE,standard=TRUE,col=1,lty=1,bty="l",las=1,
         points(xlp[j],reoptplot[xlp[j],i],col="black",cex=cex)#cols[nx+i],cex=3)
       }
     }
-    legend("topright",nam,col=col[(nx+1):(nx+ny)],lty=lty[(nx+1):(nx+ny)],bty="n",cex=cex.lab)
+    legend("topright",nam,col=col[(nx+1):(nx+ny)],lty=lty[(nx+1):(nx+ny)],bty="n",cex=cex.lab,lwd=lwd)
   
     opt<-list(optp,reoptp)
   

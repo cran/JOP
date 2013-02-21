@@ -1,12 +1,12 @@
-5ec318ab59e2139c2d478e3baec26c3a *DESCRIPTION
+7c11d35c1fc501786886b4c0091949cb *DESCRIPTION
 7a57a79b0a5b45453cde8fc87aa3385f *NAMESPACE
 d1974d71b023998899ce1b2ddf711ad0 *R/JOP.R
-23c172ce5f545377e4f3a93bd03db678 *R/locate.R
-9bfc6bb63a406ffe33ec1a918b9feb19 *R/plot.JOP.R
+26c25b4e77da10819492fc7d95b0cf77 *R/locate.R
+a5fd2eda4af9e552155207dfee30db6c *R/plot.JOP.R
 7361e81278c80b51b2ce38574b58551d *data/datax.rda
 0fe931add93115b594e5e4d87a8cfaf4 *data/datay.rda
 91dbd9437d9954d296c6ffc8fbdf013a *man/JOP.Rd
 7d40de23bef390de227bc09581a1aa26 *man/datax.rd
 1a705edeab39ed59a4b227906700e725 *man/datay.rd
-17944ff91cbdb22d9666020a90aade54 *man/locate.rd
-57ff3797c6403291ae1e6eb83ef71406 *man/plot.JOP.rd
+0a5c2e30fb4f57cafefd35302526eb8e *man/locate.rd
+9faaa5c5698912a874c83d31d7dac00e *man/plot.JOP.rd
