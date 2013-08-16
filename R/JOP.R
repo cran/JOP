@@ -428,7 +428,7 @@
                }
                for(k in j:length(xnames))
                {
-                  if(k!=j && names(coeff)[i]==paste(xnames[j],":",xnames[k],sep="") || coeff[i]==paste(xnames[k],":",xnames[j],sep=""))
+                  if(k!=j && names(coeff)[i]==paste(xnames[j],":",xnames[k],sep="") || names(coeff)[i]==paste(xnames[k],":",xnames[j],sep=""))
                   {
                     value<-value+coeff[i]*x[j]*x[k]
                   }
@@ -461,7 +461,7 @@
              }
              for(k in j:length(xnames))
              {
-                if(k!=j && names(coeff)[i]==paste(xnames[j],":",xnames[k],sep="") || coeff[i]==paste(xnames[k],":",xnames[j],sep=""))
+                if(k!=j && names(coeff)[i]==paste(xnames[j],":",xnames[k],sep="") || names(coeff)[i]==paste(xnames[k],":",xnames[j],sep=""))
                 {
                   value<-value+coeff[i]*x[j]*x[k]
                 }

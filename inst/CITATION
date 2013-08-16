@@ -1,0 +1,19 @@
+citHeader("To cite JOP in publications use:")
+
+citEntry(entry = "Article",
+  title        = "Simultaneous Optimization of Multiple Responses with the {R} Package {JOP}",
+  author       = personList(as.person("Sonja Kuhnt"),
+                   as.person("Nikolaus Rudak")),
+  journal      = "Journal of Statistical Software",
+  year         = "2013",
+  volume       = "54",
+  number       = "9",
+  pages        = "1--23",
+  url          = "http://www.jstatsoft.org/v54/i09/",
+
+  textVersion  =
+  paste("Sonja Kuhnt, Nikolaus Rudak (2013).",
+        "Simultaneous Optimization of Multiple Responses with the R Package JOP.",
+        "Journal of Statistical Software, 54(9), 1-23.",
+        "URL http://www.jstatsoft.org/v54/i09/.")
+)

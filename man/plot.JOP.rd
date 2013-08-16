@@ -54,6 +54,9 @@ Joseph J. Pignatiello (1993). Strategies for robust multiresponse quality engine
 Alexios Ghalanos and Stefan Theussl (2012). Rsolnp: General Non-linear Optimization Using Augmented Lagrange Multiplier Method. R package version 1.12. 
 
 Peter K Dunn and Gordon K Smyth (2012). dglm: Double generalized linear models, R package version 1.6.2.
+
+Sonja Kuhnt, Nikolaus Rudak (2013). Simultaneous Optimization of Multiple Responses with the R Package JOP, 
+Journal of Statistical Software, 54(9), 1-23, URL http://www.jstatsoft.org/v54/i09/.
 }
 
 
